@@ -20,35 +20,48 @@ public:
 class Edge {
 public:
     Vertex p1, p2;
-    Edge(int p1x, int p1y, int p2x, int p2y, int w, int h): p1(p1x, p1y, w, h), p2(p2x, p2y, w, h) {}
+    int idx, idy;
+    bool inSpanningTree;
+
+    Edge(int p1x, int p1y, int p2x, int p2y, int w, int h): p1(p1x, p1y, w, h), p2(p2x, p2y, w, h) {
+        inSpanningTree = 0;
+
+        if (p1x > p2x) swap(p1x, p2x);
+        if (p1y > p2y) swap(p1y, p2y);
+
+        idx = p1x * 2;
+        idy = p1y * 2;
+
+        if (p1x == p2x) {
+            idy++;
+        } else {
+            idx++;
+        }
+    }
 };
 
-template<class TVertex>
 class DSU {
 private:
     vector<int> p;
     int width, height;
-
-public:
-    DSU() {}
-    DSU(int sz) {
-        p.resize(sz);
-        for (int i = 0; i < sz; ++i) p[i] = i;
-    }
 
     int go(int v) {
         if (v == p[v]) return v;
         return p[v] = go(p[v]);
     }
 
-    bool connected(TVertex p1, TVertex p2) {
-        return go(p1.getIndex()) == go(p2.getIndex());
+public:
+    DSU(int sz) {
+        p.resize(sz);
+        for (int i = 0; i < sz; ++i) p[i] = i;
     }
 
-    void join(TVertex p1, TVertex p2) {
-        int idx1 = go(p1.getIndex());
-        int idx2 = go(p2.getIndex());
-        p[idx1] = idx2;
+    bool connected(int v, int u) {
+        return go(v) == go(u);
+    }
+
+    void join(int v, int u) {
+        p[go(v)] = go(u);
     }
 
 };
@@ -73,30 +86,28 @@ private:
         }
     }
 
-    void findST(vector<Edge> &edges, vector<bool> &inSpanningTree) {
+    void findST(vector<Edge> &edges) {
 
         random_shuffle(edges.begin(), edges.end());
 
-        inSpanningTree.resize(edges.size(), 0);
+        DSU dsu(widthOfMatrixInVertices * heightOfMatrixInVertices);
 
-        DSU<Vertex> dsu(widthOfMatrixInVertices * heightOfMatrixInVertices);
-
-        for (int i = 0; i < (int)edges.size(); ++i) {
-            if (!dsu.connected(edges[i].p1, edges[i].p2)) {
-                dsu.join(edges[i].p1, edges[i].p2);
-                inSpanningTree[i] = 1;
+        for (auto &edge: edges) {
+            if (!dsu.connected(edge.p1.getIndex(), edge.p2.getIndex())) {
+                dsu.join(edge.p1.getIndex(), edge.p2.getIndex());
+                edge.inSpanningTree = 1;
             }
         }
     }
 
-    void addRandomEdges(vector<Edge> &edges, vector<bool> &inSpanningTree, int pr) {
+    void addRandomEdges(vector<Edge> &edges, int pr) {
         if (pr == 0) return;
-        for (int i = 0; i < (int)edges.size(); ++i) {
-            if (!inSpanningTree[i] && rand() % pr == 0) inSpanningTree[i] = 1;
+        for (auto &edge: edges) {
+            if (!edge.inSpanningTree && rand() % pr == 0) edge.inSpanningTree = 1;
         }
     }
 
-    void buildMaze(vector<Edge> &edges, vector<bool> &inSpanningTree) {
+    void buildMaze(vector<Edge> &edges) {
 
         widthOfMazeInVertices = widthOfMatrixInVertices * 2 - 1;
         heightOfMazeInVertices = heightOfMatrixInVertices * 2 - 1;
@@ -109,22 +120,9 @@ private:
             }
         }
 
-        for (int i = 0; i < (int)edges.size(); ++i) {
-            if (inSpanningTree[i]) {
-                int p1x = edges[i].p1.x;
-                int p1y = edges[i].p1.y;
-
-                int p2x = edges[i].p2.x;
-                int p2y = edges[i].p2.y;
-
-                if (p1x > p2x) swap(p1x, p2x);
-                if (p1y > p2y) swap(p1y, p2y);
-
-                if (p1x == p2x) {
-                    maze[p1x * 2][p1y * 2 + 1] = 1;
-                } else {
-                    maze[p1x * 2 + 1][p1y * 2] = 1;
-                }
+        for (auto &edge: edges) {
+            if (edge.inSpanningTree) {
+                maze[edge.idx][edge.idy] = 1;
             }
         }
     }
@@ -133,12 +131,11 @@ private:
 public:
     Maze(int w, int h): widthOfMatrixInVertices(w), heightOfMatrixInVertices(h) {
         vector<Edge> edges;
-        vector<bool> inSpanningTree;
 
         buildGraph(edges);
-        findST(edges, inSpanningTree);
-        addRandomEdges(edges, inSpanningTree, 10);
-        buildMaze(edges, inSpanningTree);
+        findST(edges);
+        addRandomEdges(edges, 10);
+        buildMaze(edges);
     }
 
     int getWidth() {

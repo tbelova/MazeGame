@@ -5,39 +5,14 @@ using namespace std;
 
 const int C = 10;
 
-class Vertex {
-public:
-    int x, y, width, height;
-
-    Vertex(int x, int y, int w, int h): x(x), y(y), width(w), height(h) {}
-
-    int getIndex() {
-        return x * height + y;
-    }
-};
-
-
 class Edge {
 public:
-    Vertex p1, p2;
-    int idx, idy;
-    bool inSpanningTree;
+    sf::Vector2<int> p1, p2;
+    sf::Vector2<int> id;
 
-    Edge(int p1x, int p1y, int p2x, int p2y, int w, int h): p1(p1x, p1y, w, h), p2(p2x, p2y, w, h) {
-        inSpanningTree = 0;
+    Edge(int p1x, int p1y, int p2x, int p2y):
+        p1(p1x, p1y), p2(p2x, p2y), id(p1x * 2 + (p1y == p2y), p1y * 2 + (p1x == p2x)) {}
 
-        if (p1x > p2x) swap(p1x, p2x);
-        if (p1y > p2y) swap(p1y, p2y);
-
-        idx = p1x * 2;
-        idy = p1y * 2;
-
-        if (p1x == p2x) {
-            idy++;
-        } else {
-            idx++;
-        }
-    }
 };
 
 class DSU {
@@ -73,8 +48,12 @@ private:
     int widthOfMazeInVertices, heightOfMazeInVertices;
     vector<vector<bool> > maze;
 
+    int getIndex(sf::Vector2<int> p) {
+        return p.x * heightOfMatrixInVertices + p.y;
+    }
+
     void addEdge(vector<Edge> &edges, int i1, int j1, int i2, int j2) {
-        edges.push_back(Edge(i1, j1, i2, j2, widthOfMatrixInVertices, heightOfMatrixInVertices));
+        edges.push_back(Edge(i1, j1, i2, j2));
     }
 
     void buildGraph(vector<Edge> &edges) {
@@ -93,9 +72,9 @@ private:
         DSU dsu(widthOfMatrixInVertices * heightOfMatrixInVertices);
 
         for (auto &edge: edges) {
-            if (!dsu.connected(edge.p1.getIndex(), edge.p2.getIndex())) {
-                dsu.join(edge.p1.getIndex(), edge.p2.getIndex());
-                edge.inSpanningTree = 1;
+            if (!dsu.connected(getIndex(edge.p1), getIndex(edge.p2))) {
+                dsu.join(getIndex(edge.p1), getIndex(edge.p2));
+                maze[edge.id.x][edge.id.y] = 1;
             }
         }
     }
@@ -103,16 +82,13 @@ private:
     void addRandomEdges(vector<Edge> &edges, int pr) {
         if (pr == 0) return;
         for (auto &edge: edges) {
-            if (!edge.inSpanningTree && rand() % pr == 0) edge.inSpanningTree = 1;
+            if (rand() % pr == 0) {
+                maze[edge.id.x][edge.id.y] = 1;
+            }
         }
     }
 
     void buildMaze(vector<Edge> &edges) {
-
-        widthOfMazeInVertices = widthOfMatrixInVertices * 2 - 1;
-        heightOfMazeInVertices = heightOfMatrixInVertices * 2 - 1;
-
-        maze.resize(widthOfMazeInVertices, vector<bool>(heightOfMazeInVertices, 0));
 
         for (int i = 0; i < widthOfMatrixInVertices; ++i) {
             for (int j = 0; j < heightOfMatrixInVertices; ++j) {
@@ -120,17 +96,17 @@ private:
             }
         }
 
-        for (auto &edge: edges) {
-            if (edge.inSpanningTree) {
-                maze[edge.idx][edge.idy] = 1;
-            }
-        }
     }
 
 
 public:
     Maze(int w, int h): widthOfMatrixInVertices(w), heightOfMatrixInVertices(h) {
         vector<Edge> edges;
+
+        widthOfMazeInVertices = widthOfMatrixInVertices * 2 - 1;
+        heightOfMazeInVertices = heightOfMatrixInVertices * 2 - 1;
+
+        maze.resize(widthOfMazeInVertices, vector<bool>(heightOfMazeInVertices, 0));
 
         buildGraph(edges);
         findST(edges);

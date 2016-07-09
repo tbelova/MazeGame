@@ -7,36 +7,37 @@ const int C = 10;
 
 class Edge {
 public:
-    sf::Vector2<int> p1, p2;
-    sf::Vector2<int> id;
+    sf::Vector2<int> v1, v2;
+    sf::Vector2<int> pos;
 
-    Edge(int p1x, int p1y, int p2x, int p2y):
-        p1(p1x, p1y), p2(p2x, p2y), id(p1x * 2 + (p1y == p2y), p1y * 2 + (p1x == p2x)) {}
+    Edge(sf::Vector2<int> v1, sf::Vector2<int> v2): v1(v1), v2(v2) {}
 
 };
 
 class DSU {
 private:
-    vector<int> p;
-    int width, height;
+    vector<int> parent;
 
-    int go(int v) {
-        if (v == p[v]) return v;
-        return p[v] = go(p[v]);
+    int getRoot(int v) {
+        if (v == parent[v]) return v;
+        return parent[v] = getRoot(parent[v]);
     }
 
 public:
     DSU(int sz) {
-        p.resize(sz);
-        for (int i = 0; i < sz; ++i) p[i] = i;
+        parent.resize(sz);
+        for (int i = 0; i < sz; ++i) parent[i] = i;
     }
 
-    bool connected(int v, int u) {
-        return go(v) == go(u);
+    bool areConnected(int v, int u) {
+        return getRoot(v) == getRoot(u);
     }
 
-    void join(int v, int u) {
-        p[go(v)] = go(u);
+    bool join(int v, int u) {
+        int pv = getRoot(v);
+        int pu = getRoot(u);
+        parent[pv] = getRoot(pu);
+        return pv == pu;
     }
 
 };
@@ -44,7 +45,7 @@ public:
 class Maze {
 private:
 
-    int widthOfMatrixInVertices, heightOfMatrixInVertices;
+    int widthOfMatrix, heightOfMatrixInVertices;
     int widthOfMazeInVertices, heightOfMazeInVertices;
     vector<vector<bool> > maze;
 
@@ -52,15 +53,18 @@ private:
         return p.x * heightOfMatrixInVertices + p.y;
     }
 
-    void addEdge(vector<Edge> &edges, int i1, int j1, int i2, int j2) {
-        edges.push_back(Edge(i1, j1, i2, j2));
+    Edge newEdge(int i1, int j1, int i2, int j2) {
+        Edge e(Edge(sf::Vector2<int>(i1, j1), sf::Vector2<int>(i2, j2)));
+        e.pos = sf::Vector2<int>(i1 * 2 + (j1 == j2), j1 * 2 + (i1 == i2));
+
+        return e;
     }
 
     void buildGraph(vector<Edge> &edges) {
-        for (int i = 0; i < widthOfMatrixInVertices; ++i) {
+        for (int i = 0; i < widthOfMatrix; ++i) {
             for (int j = 0; j < heightOfMatrixInVertices; ++j) {
-                if (i < widthOfMatrixInVertices - 1) addEdge(edges, i, j, i + 1, j);
-                if (j < heightOfMatrixInVertices - 1) addEdge(edges, i, j, i, j + 1);
+                if (i < widthOfMatrix - 1) edges.push_back(newEdge(i, j, i + 1, j));
+                if (j < heightOfMatrixInVertices - 1) edges.push_back(newEdge(i, j, i, j + 1));
             }
         }
     }
@@ -69,12 +73,11 @@ private:
 
         random_shuffle(edges.begin(), edges.end());
 
-        DSU dsu(widthOfMatrixInVertices * heightOfMatrixInVertices);
+        DSU dsu(widthOfMatrix * heightOfMatrixInVertices);
 
         for (auto &edge: edges) {
-            if (!dsu.connected(getIndex(edge.p1), getIndex(edge.p2))) {
-                dsu.join(getIndex(edge.p1), getIndex(edge.p2));
-                maze[edge.id.x][edge.id.y] = 1;
+            if (!dsu.join(getIndex(edge.v1), getIndex(edge.v2))) {
+                maze[edge.pos.x][edge.pos.y] = 1;
             }
         }
     }
@@ -83,14 +86,14 @@ private:
         if (pr == 0) return;
         for (auto &edge: edges) {
             if (rand() % pr == 0) {
-                maze[edge.id.x][edge.id.y] = 1;
+                maze[edge.pos.x][edge.pos.y] = 1;
             }
         }
     }
 
     void buildMaze(vector<Edge> &edges) {
 
-        for (int i = 0; i < widthOfMatrixInVertices; ++i) {
+        for (int i = 0; i < widthOfMatrix; ++i) {
             for (int j = 0; j < heightOfMatrixInVertices; ++j) {
                 maze[i * 2][j * 2] = 1;
             }
@@ -100,10 +103,10 @@ private:
 
 
 public:
-    Maze(int w, int h): widthOfMatrixInVertices(w), heightOfMatrixInVertices(h) {
+    Maze(int w, int h): widthOfMatrix(w), heightOfMatrixInVertices(h) {
         vector<Edge> edges;
 
-        widthOfMazeInVertices = widthOfMatrixInVertices * 2 - 1;
+        widthOfMazeInVertices = widthOfMatrix * 2 - 1;
         heightOfMazeInVertices = heightOfMatrixInVertices * 2 - 1;
 
         maze.resize(widthOfMazeInVertices, vector<bool>(heightOfMazeInVertices, 0));

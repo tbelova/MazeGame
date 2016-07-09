@@ -36,8 +36,9 @@ public:
     bool join(int v, int u) {
         int pv = getRoot(v);
         int pu = getRoot(u);
-        parent[pv] = getRoot(pu);
-        return pv == pu;
+        parent[pv] = pu;
+
+        return pv != pu;
     }
 
 };
@@ -45,11 +46,11 @@ public:
 class Maze {
 private:
 
-    int widthOfMatrix, heightOfMatrixInVertices;
-    int widthOfMazeInVertices, heightOfMazeInVertices;
+    int widthOfMatrixInVertices, heightOfMatrixInVertices;
+    int widthOfMaze, heightOfMaze;
     vector<vector<bool> > maze;
 
-    int getIndex(sf::Vector2<int> p) {
+    int getNumber(sf::Vector2<int> p) {
         return p.x * heightOfMatrixInVertices + p.y;
     }
 
@@ -60,10 +61,10 @@ private:
         return e;
     }
 
-    void buildGraph(vector<Edge> &edges) {
-        for (int i = 0; i < widthOfMatrix; ++i) {
+    void makeEdgeList(vector<Edge> &edges) {
+        for (int i = 0; i < widthOfMatrixInVertices; ++i) {
             for (int j = 0; j < heightOfMatrixInVertices; ++j) {
-                if (i < widthOfMatrix - 1) edges.push_back(newEdge(i, j, i + 1, j));
+                if (i < widthOfMatrixInVertices - 1) edges.push_back(newEdge(i, j, i + 1, j));
                 if (j < heightOfMatrixInVertices - 1) edges.push_back(newEdge(i, j, i, j + 1));
             }
         }
@@ -73,10 +74,10 @@ private:
 
         random_shuffle(edges.begin(), edges.end());
 
-        DSU dsu(widthOfMatrix * heightOfMatrixInVertices);
+        DSU dsu(widthOfMatrixInVertices * heightOfMatrixInVertices);
 
         for (auto &edge: edges) {
-            if (!dsu.join(getIndex(edge.v1), getIndex(edge.v2))) {
+            if (dsu.join(getNumber(edge.v1), getNumber(edge.v2))) {
                 maze[edge.pos.x][edge.pos.y] = 1;
             }
         }
@@ -91,38 +92,36 @@ private:
         }
     }
 
-    void buildMaze(vector<Edge> &edges) {
-
-        for (int i = 0; i < widthOfMatrix; ++i) {
+    void setVerticesCells(vector<Edge> &edges) {
+        for (int i = 0; i < widthOfMatrixInVertices; ++i) {
             for (int j = 0; j < heightOfMatrixInVertices; ++j) {
                 maze[i * 2][j * 2] = 1;
             }
         }
-
     }
 
 
 public:
-    Maze(int w, int h): widthOfMatrix(w), heightOfMatrixInVertices(h) {
+    Maze(int w, int h): widthOfMatrixInVertices(w), heightOfMatrixInVertices(h) {
         vector<Edge> edges;
 
-        widthOfMazeInVertices = widthOfMatrix * 2 - 1;
-        heightOfMazeInVertices = heightOfMatrixInVertices * 2 - 1;
+        widthOfMaze = widthOfMatrixInVertices * 2 - 1;
+        heightOfMaze = heightOfMatrixInVertices * 2 - 1;
 
-        maze.resize(widthOfMazeInVertices, vector<bool>(heightOfMazeInVertices, 0));
+        maze.resize(widthOfMaze, vector<bool>(heightOfMaze, 0));
 
-        buildGraph(edges);
+        makeEdgeList(edges);
         findST(edges);
         addRandomEdges(edges, 10);
-        buildMaze(edges);
+        setVerticesCells(edges);
     }
 
     int getWidth() {
-        return widthOfMazeInVertices;
+        return widthOfMaze;
     }
 
     int getHeight() {
-        return heightOfMazeInVertices;
+        return heightOfMaze;
     }
 
     void draw(sf::RenderWindow &window) {

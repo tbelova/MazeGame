@@ -5,105 +5,148 @@ using namespace std;
 
 const int C = 10;
 
-class Maze {
+class Vertex {
+public:
+    int x, y, width, height;
+
+    Vertex(int x, int y, int w, int h): x(x), y(y), width(w), height(h) {}
+
+    int getIndex() {
+        return x * height + y;
+    }
+};
+
+
+class Edge {
+public:
+    Vertex p1, p2;
+    Edge(int p1x, int p1y, int p2x, int p2y, int w, int h): p1(p1x, p1y, w, h), p2(p2x, p2y, w, h) {}
+};
+
+template<class TVertex>
+class DSU {
 private:
-
-    int w, h;
-    vector<pair<int, int> > e;
-    vector<bool> st;
-
-    inline void addEdge(int i, int j, int i2, int j2) {
-        e.push_back({i * h + j, i2 * h + j2});
-    }
-
-    void buildGraph() {
-        for (int i = 0; i < w; ++i) {
-            for (int j = 0; j < h; ++j) {
-                if (i < w - 1) addEdge(i, j, i + 1, j);
-                if (j < h - 1) addEdge(i, j, i, j + 1);
-            }
-        }
-    }
-
     vector<int> p;
+    int width, height;
+
+public:
+    DSU() {}
+    DSU(int sz) {
+        p.resize(sz);
+        for (int i = 0; i < sz; ++i) p[i] = i;
+    }
 
     int go(int v) {
         if (v == p[v]) return v;
         return p[v] = go(p[v]);
     }
 
-    void findST() {
-        srand(time(0));
-        random_shuffle(e.begin(), e.end());
+    bool connected(TVertex p1, TVertex p2) {
+        return go(p1.getIndex()) == go(p2.getIndex());
+    }
 
-        st.resize(e.size(), 0);
+    void join(TVertex p1, TVertex p2) {
+        int idx1 = go(p1.getIndex());
+        int idx2 = go(p2.getIndex());
+        p[idx1] = idx2;
+    }
 
-        p.resize(e.size());
-        for (int i = 0; i < (int)e.size(); ++i) p[i] = i;
-        for (int i = 0; i < (int)e.size(); ++i) {
-            int v = go(e[i].first);
-            int u = go(e[i].second);
-            if (v != u) {
-                p[v] = u;
-                st[i] = 1;
+};
+
+class Maze {
+private:
+
+    int widthOfMatrixInVertices, heightOfMatrixInVertices;
+    int widthOfMazeInVertices, heightOfMazeInVertices;
+    vector<vector<bool> > maze;
+
+    void addEdge(vector<Edge> &edges, int i1, int j1, int i2, int j2) {
+        edges.push_back(Edge(i1, j1, i2, j2, widthOfMatrixInVertices, heightOfMatrixInVertices));
+    }
+
+    void buildGraph(vector<Edge> &edges) {
+        for (int i = 0; i < widthOfMatrixInVertices; ++i) {
+            for (int j = 0; j < heightOfMatrixInVertices; ++j) {
+                if (i < widthOfMatrixInVertices - 1) addEdge(edges, i, j, i + 1, j);
+                if (j < heightOfMatrixInVertices - 1) addEdge(edges, i, j, i, j + 1);
             }
         }
     }
 
-    void addRandomEdges(int pr) {
-        if (pr == 0) return;
-        for (int i = 0; i < (int)e.size(); ++i) {
-            if (!st[i] && rand() % pr == 0) st[i] = 1;
+    void findST(vector<Edge> &edges, vector<bool> &inSpanningTree) {
+
+        random_shuffle(edges.begin(), edges.end());
+
+        inSpanningTree.resize(edges.size(), 0);
+
+        DSU<Vertex> dsu(widthOfMatrixInVertices * heightOfMatrixInVertices);
+
+        for (int i = 0; i < (int)edges.size(); ++i) {
+            if (!dsu.connected(edges[i].p1, edges[i].p2)) {
+                dsu.join(edges[i].p1, edges[i].p2);
+                inSpanningTree[i] = 1;
+            }
         }
     }
 
-    vector<vector<int> > maze;
-
-    void buildMaze() {
-        maze.resize(w * 2 - 1);
-        for (int i = 0; i < (int)maze.size(); ++i) {
-            maze[i].resize(h * 2 - 1, 2);
+    void addRandomEdges(vector<Edge> &edges, vector<bool> &inSpanningTree, int pr) {
+        if (pr == 0) return;
+        for (int i = 0; i < (int)edges.size(); ++i) {
+            if (!inSpanningTree[i] && rand() % pr == 0) inSpanningTree[i] = 1;
         }
-        for (int i = 0; i < w; ++i) {
-            for (int j = 0; j < h; ++j) {
+    }
+
+    void buildMaze(vector<Edge> &edges, vector<bool> &inSpanningTree) {
+
+        widthOfMazeInVertices = widthOfMatrixInVertices * 2 - 1;
+        heightOfMazeInVertices = heightOfMatrixInVertices * 2 - 1;
+
+        maze.resize(widthOfMazeInVertices, vector<bool>(heightOfMazeInVertices, 0));
+
+        for (int i = 0; i < widthOfMatrixInVertices; ++i) {
+            for (int j = 0; j < heightOfMatrixInVertices; ++j) {
                 maze[i * 2][j * 2] = 1;
             }
         }
-        for (int i = 0; i < (int)e.size(); ++i) {
-            int p1x = e[i].first / h;
-            int p1y = e[i].first % h;
 
-            int p2x = e[i].second / h;
-            int p2y = e[i].second % h;
+        for (int i = 0; i < (int)edges.size(); ++i) {
+            if (inSpanningTree[i]) {
+                int p1x = edges[i].p1.x;
+                int p1y = edges[i].p1.y;
 
-            if (p1x > p2x) swap(p1x, p2x);
-            if (p1y > p2y) swap(p1y, p2y);
+                int p2x = edges[i].p2.x;
+                int p2y = edges[i].p2.y;
 
-            if (p1x == p2x) {
-                maze[p1x * 2][p1y * 2 + 1] = st[i];
-            } else {
-                maze[p1x * 2 + 1][p1y * 2] = st[i];
+                if (p1x > p2x) swap(p1x, p2x);
+                if (p1y > p2y) swap(p1y, p2y);
+
+                if (p1x == p2x) {
+                    maze[p1x * 2][p1y * 2 + 1] = 1;
+                } else {
+                    maze[p1x * 2 + 1][p1y * 2] = 1;
+                }
             }
         }
     }
 
 
 public:
-    Maze(): w(0), h(0) {}
+    Maze(int w, int h): widthOfMatrixInVertices(w), heightOfMatrixInVertices(h) {
+        vector<Edge> edges;
+        vector<bool> inSpanningTree;
 
-    Maze(int w, int h): w(w), h(h) {
-        buildGraph();
-        findST();
-        addRandomEdges(10);
-        buildMaze();
+        buildGraph(edges);
+        findST(edges, inSpanningTree);
+        addRandomEdges(edges, inSpanningTree, 10);
+        buildMaze(edges, inSpanningTree);
     }
 
-    int getW() {
-        return w * 2 - 1;
+    int getWidth() {
+        return widthOfMazeInVertices;
     }
 
-    int getH() {
-        return h * 2 - 1;
+    int getHeight() {
+        return heightOfMazeInVertices;
     }
 
     void draw(sf::RenderWindow &window) {
@@ -111,13 +154,11 @@ public:
             for (int j = 0; j < (int)maze[i].size(); ++j) {
                 sf::RectangleShape shape(sf::Vector2f(C, C));
                 shape.setPosition(sf::Vector2f(C * i, C * j));
-                if (maze[i][j] == 1) {
+                if (maze[i][j]) {
                     shape.setFillColor(sf::Color::Black);
-                } else { //if (maze[i][j] == 0) {
+                } else {
                     shape.setFillColor(sf::Color::Red);
-                } /*else {
-                    shape.setFillColor(sf::Color::White);
-                }*/
+                }
                 window.draw(shape);
             }
         }
@@ -127,11 +168,13 @@ public:
 
 int main()
 {
+    srand(time(0));
+
     int n, m;
     cin >> n >> m;
     Maze maze(n, m);
 
-    sf::RenderWindow window(sf::VideoMode(C * maze.getW(), C * maze.getH()), "MAZE");
+    sf::RenderWindow window(sf::VideoMode(C * maze.getWidth(), C * maze.getHeight()), "MAZE");
 
     while (window.isOpen()) {
 

@@ -3,14 +3,67 @@
 
 using namespace std;
 
-const int C = 10;
+const double C = 20;
+
+class Object {
+public:
+    virtual void draw(sf::RenderWindow &window) = 0;
+};
+
+
+class Character: public Object {
+private:
+    sf::Vector2<int> pos;
+
+public:
+    Character() {}
+    Character(sf::Vector2<int> v): pos(v) {}
+
+    sf::Vector2<int> getPos() {
+        return pos;
+    }
+
+    void move(sf::Vector2<int> v) {
+        pos += v;
+    }
+
+    virtual void draw(sf::RenderWindow &window) {
+        sf::RectangleShape rect(sf::Vector2f(C / 2, C / 2));
+        rect.setPosition(sf::Vector2f(C * pos.y + C / 4, C * pos.x + C / 4));
+        rect.setFillColor(sf::Color::Green);
+
+        window.draw(rect);
+    }
+
+};
+
+class Wall: public Object {
+private:
+    sf::Vector2<int> pos;
+
+public:
+    Wall(sf::Vector2<int> v): pos(v) {}
+
+    sf::Vector2<int> getPos() {
+        return pos;
+    }
+
+    virtual void draw(sf::RenderWindow &window) {
+        sf::RectangleShape rect(sf::Vector2f(C, C));
+        rect.setPosition(sf::Vector2f(C * pos.y, C * pos.x));
+        rect.setFillColor(sf::Color::Red);
+
+        window.draw(rect);
+    }
+
+};
 
 class Edge {
 public:
     sf::Vector2<int> v1, v2;
     sf::Vector2<int> pos;
 
-    Edge(sf::Vector2<int> v1, sf::Vector2<int> v2): v1(v1), v2(v2) {}
+    Edge(sf::Vector2<int> v1, sf::Vector2<int> v2, sf::Vector2<int> pos): v1(v1), v2(v2), pos(pos) {}
 
 };
 
@@ -55,8 +108,8 @@ private:
     }
 
     Edge newEdge(int i1, int j1, int i2, int j2) {
-        Edge e(Edge(sf::Vector2<int>(i1, j1), sf::Vector2<int>(i2, j2)));
-        e.pos = sf::Vector2<int>(i1 * 2 + (j1 == j2), j1 * 2 + (i1 == i2));
+        Edge e(Edge(sf::Vector2<int>(i1, j1), sf::Vector2<int>(i2, j2),
+                    sf::Vector2<int>(i1 * 2 + (j1 == j2), j1 * 2 + (i1 == i2))));
 
         return e;
     }
@@ -124,6 +177,20 @@ public:
         return heightOfMaze;
     }
 
+    vector<vector<bool> > getMaze() {
+        return maze;
+    }
+
+    void getWalls(vector<vector<Object*> > &objects) {
+        for (int i = 0; i < widthOfMaze; ++i) {
+            for (int j = 0; j < heightOfMaze; ++j) {
+                if (!maze[i][j]) {
+                    objects[i][j] = new Wall(sf::Vector2<int>(i, j));
+                }
+            }
+        }
+    }
+
     void draw(sf::RenderWindow &window) {
         for (int i = 0; i < (int)maze.size(); ++i) {
             for (int j = 0; j < (int)maze[i].size(); ++j) {
@@ -141,15 +208,77 @@ public:
 
 };
 
+
+class Window {
+private:
+    int w, h;
+    vector<vector<Object*> > objects;
+    Character character;
+
+public:
+    Window(int _w, int _h) {
+        Maze maze(_w, _h);
+        w = maze.getWidth();
+        h = maze.getHeight();
+
+        objects.resize(w, vector<Object*>(h, NULL));
+        maze.getWalls(objects);
+    }
+
+    int getWidth() {
+        return w;
+    }
+
+    int getHeight() {
+        return h;
+    }
+
+    void setCharacter() {
+        while (true) {
+            int x = rand() % w;
+            int y = rand() % h;
+            if (!objects[x][y]) {
+                character = Character(sf::Vector2<int>(x, y));
+                objects[x][y] = &character;
+
+                break;
+            }
+        }
+    }
+
+    void moveCharacter(sf::Vector2<int> v) {
+        sf::Vector2<int> newPos = character.getPos() + v;
+        if (newPos.x < 0 || newPos.y < 0 || newPos.x >= w || newPos.y >= h) return;
+
+        if (!objects[newPos.x][newPos.y]) {
+            objects[character.getPos().x][character.getPos().y] = NULL;
+            objects[newPos.x][newPos.y] = &character;
+
+            character.move(v);
+        }
+    }
+
+    void draw(sf::RenderWindow &window) {
+        for (int i = 0; i < w; ++i) {
+            for (int j = 0; j < h; ++j) {
+                if (objects[i][j])
+                    objects[i][j]->draw(window);
+            }
+        }
+    }
+
+};
+
 int main()
 {
     srand(time(0));
 
     int n, m;
     cin >> n >> m;
-    Maze maze(n, m);
+    Window game(n, m);
+    game.setCharacter();
 
-    sf::RenderWindow window(sf::VideoMode(C * maze.getWidth(), C * maze.getHeight()), "MAZE");
+    sf::RenderWindow window(sf::VideoMode(C * game.getHeight(), C * game.getWidth()), "MAZE");
 
     while (window.isOpen()) {
 
@@ -157,11 +286,22 @@ int main()
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::KeyPressed) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                    game.moveCharacter(sf::Vector2<int>(0, -1));
+                } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                    game.moveCharacter(sf::Vector2<int>(0, 1));
+                } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                    game.moveCharacter(sf::Vector2<int>(-1, 0));
+                } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                    game.moveCharacter(sf::Vector2<int>(1, 0));
+                }
+            }
         }
 
         window.clear();
 
-        maze.draw(window);
+        game.draw(window);
 
         window.display();
     }

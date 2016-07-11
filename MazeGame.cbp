@@ -45,6 +45,8 @@
 		<Linker>
 			<Add directory="C:/SFML-2.3.2-windows-gcc-4.8.1-tdm-32-bit/SFML-2.3.2/lib" />
 		</Linker>
+		<Unit filename="Character.cpp" />
+		<Unit filename="Character.h" />
 		<Unit filename="Consts.h" />
 		<Unit filename="DSU.cpp" />
 		<Unit filename="DSU.h" />
@@ -52,6 +54,7 @@
 		<Unit filename="Edge.h" />
 		<Unit filename="Maze.cpp" />
 		<Unit filename="Maze.h" />
+		<Unit filename="Wall.cpp" />
 		<Unit filename="Wall.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>

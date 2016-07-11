@@ -4,7 +4,6 @@
     #include <bits/stdc++.h>
     #include <SFML/Graphics.hpp>
     #include "Edge.h"
-    #include "Object.h"
     #include "DSU.h"
     #include "Wall.h"
     #include "Consts.h"
@@ -24,12 +23,12 @@
         void setVerticesCells(std::vector<Edge> &edges);
 
     public:
-        Maze();
         Maze(int w, int h);
 
         int getWidth();
         int getHeight();
-        bool getCell(int i, int j);
+        bool isInMaze(sf::Vector2<int> v);
+        bool getCell(sf::Vector2<int> v);
         std::vector<std::vector<bool> > getMaze();
     };
 

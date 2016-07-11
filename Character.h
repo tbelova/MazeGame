@@ -1,21 +1,23 @@
-#ifndef __WALL__
-    #define __WALL__
+#ifndef __CHARACTER__
+    #define __CHARACTER__
 
     #include <bits/stdc++.h>
     #include <SFML/Graphics.hpp>
     #include "Consts.h"
 
-    class Wall: public sf::Drawable {
+    class Character: public sf::Drawable {
     private:
         sf::Vector2<int> pos;
         sf::RectangleShape rect;
 
     public:
-        Wall(sf::Vector2<int> v);
+        Character();
+        Character(sf::Vector2<int> v);
         sf::Vector2<int> getPos();
+        void move(sf::Vector2<int> v);
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
-        virtual ~Wall();
+        virtual ~Character();
 
     };
 
-#endif // __WALL__
+#endif

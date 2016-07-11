@@ -1,9 +1,8 @@
-#include <bits/stdc++.h>
-#include <SFML/Graphics.hpp>
-#include "Consts.h"
-
 #ifndef __DSU__
     #define __DSU__
+
+    #include <bits/stdc++.h>
+
 
     class DSU {
     private:

@@ -50,9 +50,6 @@ void Maze::setVerticesCells(std::vector<Edge> &edges) {
     }
 }
 
-
-Maze::Maze() = default;
-
 Maze::Maze(int w, int h): widthOfMatrixInVertices(w), heightOfMatrixInVertices(h) {
     std::vector<Edge> edges;
 
@@ -75,9 +72,12 @@ int Maze::getHeight() {
     return heightOfMaze;
 }
 
-bool Maze::getCell(int i, int j) {
-    if (i < 0 || j < 0 || i >= Maze::widthOfMaze || j >= Maze::heightOfMaze) return 0;
-    return maze[i][j];
+bool Maze::isInMaze(sf::Vector2<int> v) {
+    return !(v.x < 0 || v.y < 0 || v.x >= Maze::widthOfMaze || v.y >= Maze::heightOfMaze);
+}
+
+bool Maze::getCell(sf::Vector2<int> v) {
+    return maze[v.x][v.y];
 }
 
 std::vector<std::vector<bool> > Maze::getMaze() {

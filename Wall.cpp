@@ -1,10 +1,5 @@
 #include "Wall.h"
 
-Wall::Wall(const Wall& w): Manager<sf::Drawable>::Object(w) {
-    pos = w.pos;
-    rect = w.rect;
-}
-
 Wall::Wall(sf::Vector2<int> v, Manager<sf::Drawable>& mng):
     Manager<sf::Drawable>::Object(mng), pos(v) {
     rect.setSize(sf::Vector2f(C, C));

@@ -12,7 +12,7 @@
         sf::RectangleShape rect;
 
     public:
-        Wall(const Wall& w);
+        Wall(const Wall& w) = default;
         Wall(sf::Vector2<int> v, Manager<sf::Drawable>& mng);
         sf::Vector2<int> getPos();
         void setPos(sf::Vector2<int> v);

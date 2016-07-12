@@ -13,6 +13,7 @@ sf::Vector2<int> Character::getPos() {
 
 void Character::setPos(sf::Vector2<int> v) {
     pos = v;
+    rect.setPosition(sf::Vector2f(C * pos.y + C / 4, C * pos.x + C / 4));
 }
 
 void Character::move(sf::Vector2<int> v) {

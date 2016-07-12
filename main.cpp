@@ -13,9 +13,9 @@ using namespace std;
 class Game {
 private:
     int w, h;
-    Character character;
     Maze maze;
     Manager<sf::Drawable> mng;
+    Character character;
     vector<Wall> walls;
 
     void getWalls() {
@@ -41,7 +41,7 @@ private:
     }
 
 public:
-    Game(int _w, int _h): maze(_w, _h), character(sf::Vector2<int>(0, 0), mng) {
+    Game(int _w, int _h): maze(_w, _h), mng(), character(sf::Vector2<int>(0, 0), mng) {
         w = maze.getWidth();
         h = maze.getHeight();
 
@@ -66,7 +66,9 @@ public:
     }
 
     void draw(sf::RenderTarget &target) {
-        mng.draw(target);
+        for (auto obj: mng) {
+            target.draw(*obj, sf::RenderStates());
+        }
     }
 
     void start() {

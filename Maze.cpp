@@ -80,6 +80,3 @@ bool Maze::getCell(sf::Vector2<int> v) {
     return maze[v.x][v.y];
 }
 
-std::vector<std::vector<bool> > Maze::getMaze() {
-    return maze;
-}

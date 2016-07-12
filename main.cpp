@@ -6,21 +6,23 @@
 #include "DSU.h"
 #include "Maze.h"
 #include "Character.h"
+#include "Manager.h"
 
 using namespace std;
 
 class Game {
 private:
     int w, h;
-    vector<sf::Drawable*> objects;
     Character character;
     Maze maze;
+    Manager<sf::Drawable> mng;
+    vector<Wall> walls;
 
     void getWalls() {
         for (int i = 0; i < w; ++i) {
             for (int j = 0; j < h; ++j) {
                 if (!maze.getCell(sf::Vector2<int>(i, j))) {
-                    objects.push_back(new Wall(sf::Vector2<int>(i, j)));
+                    walls.push_back(Wall(sf::Vector2<int>(i, j), mng));
                 }
             }
         }
@@ -31,8 +33,7 @@ private:
             int x = rand() % w;
             int y = rand() % h;
             if (maze.getCell(sf::Vector2<int>(x, y))) {
-                character = Character(sf::Vector2<int>(x, y));
-                objects.push_back(&character);
+                character.setPos(sf::Vector2<int>(x, y));
 
                 break;
             }
@@ -40,12 +41,13 @@ private:
     }
 
 public:
-    Game(int _w, int _h): maze(_w, _h) {
+    Game(int _w, int _h): maze(_w, _h), character(sf::Vector2<int>(0, 0), mng) {
         w = maze.getWidth();
         h = maze.getHeight();
 
         getWalls();
         setCharacter();
+
     }
 
     int getWidth() {
@@ -63,14 +65,11 @@ public:
             character.move(v);
     }
 
-    void draw(sf::RenderWindow &window) {
-        for (int i = 0; i < (int)objects.size(); ++i) {
-            window.draw(*objects[i]);
-        }
+    void draw(sf::RenderTarget &target) {
+        mng.draw(target);
     }
 
     void start() {
-
         sf::RenderWindow window(sf::VideoMode(C * getHeight(), C * getWidth()), "MAZE");
 
         while (window.isOpen()) {

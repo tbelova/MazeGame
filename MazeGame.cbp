@@ -52,6 +52,7 @@
 		<Unit filename="DSU.h" />
 		<Unit filename="Edge.cpp" />
 		<Unit filename="Edge.h" />
+		<Unit filename="Manager.h" />
 		<Unit filename="Maze.cpp" />
 		<Unit filename="Maze.h" />
 		<Unit filename="Wall.cpp" />

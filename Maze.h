@@ -29,7 +29,6 @@
         int getHeight();
         bool isInMaze(sf::Vector2<int> v);
         bool getCell(sf::Vector2<int> v);
-        std::vector<std::vector<bool> > getMaze();
     };
 
 #endif // __MAZE__

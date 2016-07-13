@@ -24,10 +24,10 @@
             }
 
             Object& operator = (const Object& obj) {
+                T::operator=(obj);
                 mMgr.mObjects.erase(this);
                 mMgr = obj.mMgr;
                 mMgr.mObjects.insert(this);
-                T().operator=(obj);
             }
 
             virtual ~Object() {

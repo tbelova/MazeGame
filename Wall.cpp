@@ -15,5 +15,4 @@ void Wall::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(rect, states);
 }
 
-Wall::~Wall() = default;
 

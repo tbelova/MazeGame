@@ -15,9 +15,8 @@
         Wall(const Wall& w) = default;
         Wall(sf::Vector2<int> v, Manager<sf::Drawable>& mng);
         sf::Vector2<int> getPos() const;
-        void setPos(sf::Vector2<int> v);
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
-        virtual ~Wall();
+        virtual ~Wall() = default;
 
     };
 

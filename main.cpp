@@ -17,6 +17,7 @@ private:
     Character character;
     vector<Wall> walls;
     sf::RenderWindow window;
+    const float speed = 100;
 
     void getWalls() {
         for (int i = 0; i < w; ++i) {
@@ -33,7 +34,7 @@ private:
             int x = rand() % w;
             int y = rand() % h;
             if (maze.getCell(sf::Vector2<int>(x, y))) {
-                character.setPos(sf::Vector2<int>(x, y));
+                character.setPos(sf::Vector2f(x, y));
 
                 break;
             }
@@ -43,18 +44,18 @@ private:
 public:
     Game(int _w, int _h):
         maze(_w, _h), w(maze.getWidth()), h(maze.getHeight()), mng(),
-        character(sf::Vector2<int>(0, 0), mng), window(sf::VideoMode(C * w, C * h), "MAZE") {
+        character(sf::Vector2f(0, 0), mng), window(sf::VideoMode(C * w, C * h), "MAZE") {
 
         getWalls();
         setCharacter();
 
     }
 
-    void moveCharacter(sf::Vector2<int> v) {
-        sf::Vector2<int> newPos = character.getPos() + v;
+    void moveCharacter(sf::Vector2f v, sf::Time time) {
+        //sf::Vector2f newPos = character.getPos() + v;
 
-        if (maze.isInMaze(newPos) && maze.getCell(newPos))
-            character.move(v);
+        //if (maze.isInMaze(newPos) && maze.getCell(newPos))
+            character.move(v * time.asSeconds() * speed);
     }
 
     void draw() {
@@ -65,23 +66,36 @@ public:
 
     void start() {
 
+        sf::Clock clock;
+
         while (window.isOpen()) {
+            clock.restart();
 
             sf::Event event;
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed)
                     window.close();
-                if (event.type == sf::Event::KeyPressed) {
+                /*if (event.type == sf::Event::KeyPressed) {
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                        moveCharacter(sf::Vector2<int>(-1, 0));
+                        moveCharacter(sf::Vector2f(-1, 0), clock.getElapsedTime());
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                        moveCharacter(sf::Vector2<int>(1, 0));
+                        moveCharacter(sf::Vector2f(1, 0), clock.getElapsedTime());
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                        moveCharacter(sf::Vector2<int>(0, -1));
+                        moveCharacter(sf::Vector2f(0, -1), clock.getElapsedTime());
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-                        moveCharacter(sf::Vector2<int>(0, 1));
+                        moveCharacter(sf::Vector2f(0, 1), clock.getElapsedTime());
                     }
-                }
+                }*/
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                moveCharacter(sf::Vector2f(-1, 0), clock.getElapsedTime());
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                moveCharacter(sf::Vector2f(1, 0), clock.getElapsedTime());
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                moveCharacter(sf::Vector2f(0, -1), clock.getElapsedTime());
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                moveCharacter(sf::Vector2f(0, 1), clock.getElapsedTime());
             }
 
             window.clear();
@@ -89,6 +103,7 @@ public:
             draw();
 
             window.display();
+
         }
     }
 

@@ -6,7 +6,7 @@
     #include "Consts.h"
     #include "Manager.h"
 
-    class Wall: public Manager<sf::Drawable>::Object {
+    class Wall: public Managable<sf::Drawable> {
     private:
         sf::Vector2<int> pos;
         sf::RectangleShape rect;
@@ -14,7 +14,7 @@
     public:
         Wall(const Wall& w) = default;
         Wall(sf::Vector2<int> v, Manager<sf::Drawable>& mng);
-        sf::Vector2<int> getPos();
+        sf::Vector2<int> getPos() const;
         void setPos(sf::Vector2<int> v);
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
         virtual ~Wall();

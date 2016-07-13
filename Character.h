@@ -6,14 +6,14 @@
     #include "Consts.h"
     #include "Manager.h"
 
-    class Character: public Manager<sf::Drawable>::Object {
+    class Character: public Managable<sf::Drawable> {
     private:
         sf::Vector2<int> pos;
         sf::RectangleShape rect;
 
     public:
         Character(sf::Vector2<int> v, Manager<sf::Drawable>& mng);
-        sf::Vector2<int> getPos();
+        sf::Vector2<int> getPos() const;
         void setPos(sf::Vector2<int> v);
         void move(sf::Vector2<int> v);
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;

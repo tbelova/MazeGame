@@ -1,10 +1,12 @@
 #include "Maze.h"
 
+Maze::Edge::Edge(sf::Vector2<int> v1, sf::Vector2<int> v2, sf::Vector2<int> pos): v1(v1), v2(v2), pos(pos) {}
+
 int Maze::getNumber(sf::Vector2<int> p) {
     return p.x * heightOfMatrixInVertices + p.y;
 }
 
-Edge Maze::newEdge(int i1, int j1, int i2, int j2) {
+Maze::Edge Maze::newEdge(int i1, int j1, int i2, int j2) {
     Edge e(Edge(sf::Vector2<int>(i1, j1), sf::Vector2<int>(i2, j2),
                 sf::Vector2<int>(i1 * 2 + (j1 == j2), j1 * 2 + (i1 == i2))));
 

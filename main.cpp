@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include "Consts.h"
 #include "Wall.h"
-#include "Edge.h"
 #include "DSU.h"
 #include "Maze.h"
 #include "Character.h"
@@ -12,11 +11,12 @@ using namespace std;
 
 class Game {
 private:
-    int w, h;
     Maze maze;
+    int w, h;
     Manager<sf::Drawable> mng;
     Character character;
     vector<Wall> walls;
+    sf::RenderWindow window;
 
     void getWalls() {
         for (int i = 0; i < w; ++i) {
@@ -41,21 +41,13 @@ private:
     }
 
 public:
-    Game(int _w, int _h): maze(_w, _h), mng(), character(sf::Vector2<int>(0, 0), mng) {
-        w = maze.getWidth();
-        h = maze.getHeight();
+    Game(int _w, int _h):
+        maze(_w, _h), w(maze.getWidth()), h(maze.getHeight()), mng(),
+        character(sf::Vector2<int>(0, 0), mng), window(sf::VideoMode(C * w, C * h), "MAZE") {
 
         getWalls();
         setCharacter();
 
-    }
-
-    int getWidth() {
-        return w;
-    }
-
-    int getHeight() {
-        return h;
     }
 
     void moveCharacter(sf::Vector2<int> v) {
@@ -65,14 +57,13 @@ public:
             character.move(v);
     }
 
-    void draw(sf::RenderTarget &target) {
+    void draw() {
         for (auto obj: mng) {
-            target.draw(*obj, sf::RenderStates());
+            window.draw(*obj, sf::RenderStates());
         }
     }
 
     void start() {
-        sf::RenderWindow window(sf::VideoMode(C * getHeight(), C * getWidth()), "MAZE");
 
         while (window.isOpen()) {
 
@@ -82,20 +73,20 @@ public:
                     window.close();
                 if (event.type == sf::Event::KeyPressed) {
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                        moveCharacter(sf::Vector2<int>(0, -1));
-                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                        moveCharacter(sf::Vector2<int>(0, 1));
-                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
                         moveCharacter(sf::Vector2<int>(-1, 0));
-                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
                         moveCharacter(sf::Vector2<int>(1, 0));
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                        moveCharacter(sf::Vector2<int>(0, -1));
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                        moveCharacter(sf::Vector2<int>(0, 1));
                     }
                 }
             }
 
             window.clear();
 
-            draw(window);
+            draw();
 
             window.display();
         }

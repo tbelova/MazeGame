@@ -3,7 +3,6 @@
 
     #include <bits/stdc++.h>
     #include <SFML/Graphics.hpp>
-    #include "Edge.h"
     #include "DSU.h"
     #include "Wall.h"
     #include "Consts.h"
@@ -14,6 +13,14 @@
         int widthOfMatrixInVertices, heightOfMatrixInVertices;
         int widthOfMaze, heightOfMaze;
         std::vector<std::vector<bool> > maze;
+
+        class Edge {
+        public:
+            sf::Vector2<int> v1, v2;
+            sf::Vector2<int> pos;
+
+            Edge(sf::Vector2<int>, sf::Vector2<int>, sf::Vector2<int>);
+        };
 
         int getNumber(sf::Vector2<int> p);
         Edge newEdge(int i1, int j1, int i2, int j2);

@@ -23,7 +23,12 @@
                 mMgr.mObjects.insert(this);
             }
 
-            Object& operator = (const Object&) = delete;
+            Object& operator = (const Object& obj) {
+                mMgr.mObjects.erase(this);
+                mMgr = obj.mMgr;
+                mMgr.mObjects.insert(this);
+                T().operator=(obj);
+            }
 
             virtual ~Object() {
               mMgr.mObjects.erase(this);
@@ -46,5 +51,8 @@
           return mObjects.end();
         }
     };
+
+    template<class T>
+    using Managable = typename Manager<T>::Object;
 
 #endif // __MANAGER__

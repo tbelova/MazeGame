@@ -29,14 +29,18 @@ void Character::moveCharacter(sf::Vector2f v, sf::Time time) {
 }
 
 void Character::update(sf::Time time) {
+    sf::Vector2f v;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        moveCharacter(sf::Vector2f(-1, 0), time);
+        v += sf::Vector2f(-1, 0);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        moveCharacter(sf::Vector2f(1, 0), time);
+        v += sf::Vector2f(1, 0);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        moveCharacter(sf::Vector2f(0, -1), time);
+        v += sf::Vector2f(0, -1);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        moveCharacter(sf::Vector2f(0, 1), time);
+        v += sf::Vector2f(0, 1);
+
+    if (v != sf::Vector2f(0, 0))
+        moveCharacter(v / std::sqrt(v.x * v.x + v.y * v.y), time);
 }
 
 

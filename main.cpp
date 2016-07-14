@@ -76,8 +76,8 @@ public:
 
         sf::Clock clock;
 
+        clock.restart();
         while (window.isOpen()) {
-            clock.restart();
 
             sf::Event event;
             while (window.pollEvent(event)) {
@@ -85,7 +85,7 @@ public:
                     window.close();
             }
 
-            update(clock.getElapsedTime());
+            update(clock.restart());
 
             window.clear();
 

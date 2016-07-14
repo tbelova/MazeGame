@@ -11,7 +11,7 @@
     private:
         sf::Vector2f pos;
         sf::RectangleShape rect;
-        const float speed = 100;
+        const float speed = 2;
 
     public:
         Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng);

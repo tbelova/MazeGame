@@ -1,7 +1,7 @@
 #include "Character.h"
 
-Character::Character(sf::Vector2f v, Manager<sf::Drawable>& mng):
-    Manager<sf::Drawable>::Object(mng), pos(v) {
+Character::Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng):
+    Manager<sf::Drawable>::Object(mng), Manager<Updatable>::Object(updMng), pos(v) {
     rect.setSize(sf::Vector2f(C / 2, C / 2));
     rect.setPosition(sf::Vector2f(0, 0));
     rect.setFillColor(sf::Color::Green);
@@ -22,6 +22,21 @@ void Character::move(sf::Vector2f v) {
 void Character::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     states.transform = sf::Transform().translate(pos.x * C + C / 4, pos.y * C + C / 4) * states.transform;
     target.draw(rect, states);
+}
+
+void Character::moveCharacter(sf::Vector2f v, sf::Time time) {
+    move(v * time.asSeconds() * speed);
+}
+
+void Character::update(sf::Time time) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        moveCharacter(sf::Vector2f(-1, 0), time);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        moveCharacter(sf::Vector2f(1, 0), time);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        moveCharacter(sf::Vector2f(0, -1), time);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        moveCharacter(sf::Vector2f(0, 1), time);
 }
 
 

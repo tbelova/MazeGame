@@ -5,18 +5,22 @@
     #include <SFML/Graphics.hpp>
     #include "Consts.h"
     #include "Manager.h"
+    #include "Updatable.h"
 
-    class Character: public Managable<sf::Drawable> {
+    class Character: public Managable<sf::Drawable>, public Managable<Updatable> {
     private:
         sf::Vector2f pos;
         sf::RectangleShape rect;
+        const float speed = 100;
 
     public:
-        Character(sf::Vector2f v, Manager<sf::Drawable>& mng);
+        Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng);
         sf::Vector2f getPos() const;
         void setPos(sf::Vector2f v);
         void move(sf::Vector2f v);
+        void moveCharacter(sf::Vector2f v, sf::Time time);
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+        virtual void update(sf::Time time) override;
         virtual ~Character() = default;
 
     };

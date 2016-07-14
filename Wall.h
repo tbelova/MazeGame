@@ -5,6 +5,7 @@
     #include <SFML/Graphics.hpp>
     #include "Consts.h"
     #include "Manager.h"
+    #include "Updatable.h"
 
     class Wall: public Managable<sf::Drawable> {
     private:

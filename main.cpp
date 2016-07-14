@@ -6,6 +6,7 @@
 #include "Maze.h"
 #include "Character.h"
 #include "Manager.h"
+#include "Updatable.h"
 
 using namespace std;
 
@@ -14,10 +15,11 @@ private:
     Maze maze;
     int w, h;
     Manager<sf::Drawable> mng;
+    Manager<Updatable> updMng;
     Character character;
     vector<Wall> walls;
     sf::RenderWindow window;
-    const float speed = 100;
+    //const float speed = 100;
 
     void getWalls() {
         for (int i = 0; i < w; ++i) {
@@ -43,24 +45,30 @@ private:
 
 public:
     Game(int _w, int _h):
-        maze(_w, _h), w(maze.getWidth()), h(maze.getHeight()), mng(),
-        character(sf::Vector2f(0, 0), mng), window(sf::VideoMode(C * w, C * h), "MAZE") {
+        maze(_w, _h), w(maze.getWidth()), h(maze.getHeight()), mng(), updMng(),
+        character(sf::Vector2f(0, 0), mng, updMng), window(sf::VideoMode(C * w, C * h), "MAZE") {
 
         getWalls();
         setCharacter();
 
     }
 
-    void moveCharacter(sf::Vector2f v, sf::Time time) {
+    //void moveCharacter(sf::Vector2f v, sf::Time time) {
         //sf::Vector2f newPos = character.getPos() + v;
 
         //if (maze.isInMaze(newPos) && maze.getCell(newPos))
-            character.move(v * time.asSeconds() * speed);
-    }
+          //  character.move(v * time.asSeconds() * speed);
+    //}
 
     void draw() {
         for (auto obj: mng) {
             window.draw(*obj, sf::RenderStates());
+        }
+    }
+
+    void update(sf::Time time) {
+        for (auto obj: updMng) {
+            obj->update(time);
         }
     }
 
@@ -75,28 +83,9 @@ public:
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed)
                     window.close();
-                /*if (event.type == sf::Event::KeyPressed) {
-                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                        moveCharacter(sf::Vector2f(-1, 0), clock.getElapsedTime());
-                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                        moveCharacter(sf::Vector2f(1, 0), clock.getElapsedTime());
-                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                        moveCharacter(sf::Vector2f(0, -1), clock.getElapsedTime());
-                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-                        moveCharacter(sf::Vector2f(0, 1), clock.getElapsedTime());
-                    }
-                }*/
             }
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                moveCharacter(sf::Vector2f(-1, 0), clock.getElapsedTime());
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                moveCharacter(sf::Vector2f(1, 0), clock.getElapsedTime());
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                moveCharacter(sf::Vector2f(0, -1), clock.getElapsedTime());
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-                moveCharacter(sf::Vector2f(0, 1), clock.getElapsedTime());
-            }
+            update(clock.getElapsedTime());
 
             window.clear();
 

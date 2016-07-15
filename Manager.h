@@ -14,8 +14,9 @@
           Manager<T> &mMgr;
 
           public:
-            Object(Manager<T> &aMgr)
-            : T(), mMgr(aMgr) {
+            template<class ... Args>
+            Object(Manager<T> &aMgr, Args ... args)
+            : T(args ...), mMgr(aMgr) {
               mMgr.mObjects.insert(this);
             }
 

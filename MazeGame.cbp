@@ -53,6 +53,7 @@
 		<Unit filename="Manager.h" />
 		<Unit filename="Maze.cpp" />
 		<Unit filename="Maze.h" />
+		<Unit filename="Segment.h" />
 		<Unit filename="Updatable.h" />
 		<Unit filename="Wall.cpp" />
 		<Unit filename="Wall.h" />

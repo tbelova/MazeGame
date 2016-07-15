@@ -10,6 +10,7 @@
 
 using namespace std;
 
+
 class Game {
 private:
     Maze maze;
@@ -19,7 +20,6 @@ private:
     Character character;
     vector<Wall> walls;
     sf::RenderWindow window;
-    //const float speed = 100;
 
     void getWalls() {
         for (int i = 0; i < w; ++i) {
@@ -46,7 +46,7 @@ private:
 public:
     Game(int _w, int _h):
         maze(_w, _h), w(maze.getWidth()), h(maze.getHeight()), mng(), updMng(),
-        character(sf::Vector2f(0, 0), mng, updMng), window(sf::VideoMode(C * w, C * h), "MAZE") {
+        character(sf::Vector2f(0, 0), mng, updMng, maze), window(sf::VideoMode(C * w, C * h), "MAZE") {
 
         getWalls();
         setCharacter();
@@ -76,7 +76,7 @@ public:
 
         sf::Clock clock;
 
-        clock.restart();
+        //clock.restart();
         while (window.isOpen()) {
 
             sf::Event event;
@@ -100,7 +100,7 @@ public:
 
 int main()
 {
-    srand(time(0));
+   // srand(time(0));
 
     int n, m;
     cin >> n >> m;

@@ -10,6 +10,28 @@
         Segment(sf::Vector2f a, sf::Vector2f b): a(a), b(b) {}
     };
 
+    class Equality {
+    private:
+        sf::Vector2f a, b, c;
+        float cross_product(sf::Vector2f v1, sf::Vector2f v2) {
+            return v1.x * v2.y - v1.y * v2.x;
+        }
+
+    public:
+        Equality(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c): a(a), b(b), c(c) {}
+        bool solve(float& t, float& l) {
+            if (cross_product(a, b) != 0) {
+                t = cross_product(c, b) / cross_product(a, b);
+                l = cross_product(c, a) / cross_product(b, a);
+            } else {
+                return false;
+            }
+
+            return true;
+        }
+
+    };
+
     class Ray {
     private:
         sf::Vector2f a, b;
@@ -23,30 +45,10 @@
             float anst;
             for (int i = 0; i < (int)segments.size(); ++i) {
                 Segment s = segments[i];
-
-                sf::Vector2f c = b - a, d = s.a - s.b, e = s.a - a;
-
-                float l, t;
-
-                if (d.x * c.y != d.y * c.x) {
-                    l = (e.x * c.y - e.y * c.x) / (d.x * c.y - d.y * c.x);
-                    if (c.x != 0)
-                        t = (e.x + l * d.x) / c.x;
-                    else
-                        t = (e.y + l * d.y) / c.y;
-                    if (0 <= l && l <= 1) {
-                        if (t >= 0 && (t < anst || !fl)) {
-                            fl = true;
-                            anst = t;
-                        }
-                    }
-
-                } else if (e.x * c.y == e.y * c.x) {
-                    if (c.x != 0)
-                        t = std::min(e.x, e.x + d.x) / c.x;
-                    else
-                        t = std::min(e.y, e.y + d.y) / c.y;
-                    if (t >= 0 && (t < anst || !fl)) {
+                Equality q(b - a, s.a - s.b, s.a - a);
+                float t, l;
+                if (q.solve(t, l) && 0 <= t && 0 <= l && l <= 1) {
+                    if (t < anst || !fl) {
                         fl = true;
                         anst = t;
                     }

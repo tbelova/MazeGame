@@ -7,6 +7,7 @@
 #include "Character.h"
 #include "Manager.h"
 #include "Updatable.h"
+#include "SetOfSegments.h"
 
 using namespace std;
 
@@ -46,7 +47,7 @@ private:
 public:
     Game(int _w, int _h):
         maze(_w, _h), w(maze.getWidth()), h(maze.getHeight()), mng(), updMng(),
-        character(sf::Vector2f(0, 0), mng, updMng, maze), window(sf::VideoMode(C * w, C * h), "MAZE") {
+        character(sf::Vector2f(0, 0), mng, updMng, SetOfSegments(maze)), window(sf::VideoMode(C * w, C * h), "MAZE") {
 
         getWalls();
         setCharacter();

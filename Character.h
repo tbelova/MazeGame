@@ -6,25 +6,25 @@
     #include "Consts.h"
     #include "Manager.h"
     #include "Updatable.h"
-    #include "Segment.h"
+    #include "SetOfSegments.h"
     #include "Maze.h"
+    #include "Smth.h"
 
     class Character: public Managable<sf::Drawable>, public Managable<Updatable> {
     private:
         sf::Vector2f pos;
         sf::RectangleShape rect;
         const float speed = 2;
-        std::vector<Segment> segments;
+        SetOfSegments segments;
 
     public:
-        Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng, Maze& maze);
+        Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng, SetOfSegments segments);
         sf::Vector2f getPos() const;
         void setPos(sf::Vector2f v);
         void updatePos(sf::Vector2f v);
         void move(sf::Vector2f v);
         void moveCharacter(sf::Vector2f v, sf::Time time);
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
-        bool intersect(Segment v);
         virtual void update(sf::Time time) override;
         virtual ~Character() = default;
 

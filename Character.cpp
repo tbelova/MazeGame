@@ -1,7 +1,7 @@
 #include "Character.h"
 
-Character::Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng, SetOfSegments segments):
-    Manager<sf::Drawable>::Object(mng), Manager<Updatable>::Object(updMng), pos(v + sf::Vector2f(0.5, 0.5)), segments(segments) {
+Character::Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng):
+    Manager<sf::Drawable>::Object(mng), Manager<Updatable>::Object(updMng), pos(v + sf::Vector2f(0.5, 0.5)) {
 
     rect.setSize(sf::Vector2f(C / 2, C / 2));
     rect.setPosition(sf::Vector2f(0, 0));

@@ -7,18 +7,13 @@
 
     class LinEqSystem2 {
     private:
-        class Column {
-        public:
-            float first, second;
 
-            Column(sf::Vector2f v);
-
-        };
-
-        static float determinant(Column v1, Column v2);
+        static float determinant(sf::Vector2f v1, sf::Vector2f v2);
 
     public:
-        static bool solve(Column a, Column b, Column c, float& t, float& l);
+        LinEqSystem2() = delete;
+
+        static bool solve(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, float& t, float& l);
 
     };
 

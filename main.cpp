@@ -44,11 +44,38 @@ private:
         }
     }
 
+    SetOfSegments getSegments() {
+
+        SetOfSegments s;
+
+        float off = 0.25;
+
+        for (int i = 0; i < maze.getWidth(); ++i) {
+            for (int j = 0; j < maze.getHeight(); ++j) {
+                if (!maze.getCell(sf::Vector2<int>(i, j))) {
+                    s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(i - off, j - off), sf::Vector2f(i + 1 + off, j - off)));
+                    s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(i + 1 + off, j - off), sf::Vector2f(i + 1 + off, j + 1 + off)));
+                    s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(i + 1 + off, j + 1 + off), sf::Vector2f(i - off, j + 1 + off)));
+                    s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(i - off, j + 1 + off), sf::Vector2f(i - off, j - off)));
+                }
+            }
+        }
+/*
+        s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(off, 0), sf::Vector2f(off, maze.getHeight())));
+        s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(0, off), sf::Vector2f(maze.getWidth(), off)));
+        s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(maze.getWidth() - off, 0), sf::Vector2f(maze.getWidth() - off, maze.getHeight())));
+        s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(0, maze.getHeight() + off), sf::Vector2f(maze.getWidth(), maze.getHeight() + off)));
+*/
+        return s;
+
+    }
+
 public:
     Game(int _w, int _h):
         maze(_w, _h), w(maze.getWidth()), h(maze.getHeight()), mng(), updMng(),
-        character(sf::Vector2f(0, 0), mng, updMng, SetOfSegments(maze)), window(sf::VideoMode(C * w, C * h), "MAZE") {
+        character(sf::Vector2f(0, 0), mng, updMng), window(sf::VideoMode(C * w, C * h), "MAZE") {
 
+        character.segments = getSegments();
         getWalls();
         setCharacter();
 

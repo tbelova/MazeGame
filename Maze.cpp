@@ -30,7 +30,7 @@ void Maze::findST(std::vector<Edge> &edges) {
 
     for (auto &edge: edges) {
         if (dsu.join(getNumber(edge.v1), getNumber(edge.v2))) {
-            maze[edge.pos.x][edge.pos.y] = 1;
+            maze[edge.pos.x + 1][edge.pos.y + 1] = 1;
         }
     }
 }
@@ -39,7 +39,7 @@ void Maze::addRandomEdges(std::vector<Edge> &edges, int pr) {
     if (pr == 0) return;
     for (auto &edge: edges) {
         if (rand() % pr == 0) {
-            maze[edge.pos.x][edge.pos.y] = 1;
+            maze[edge.pos.x + 1][edge.pos.y + 1] = 1;
         }
     }
 }
@@ -47,7 +47,7 @@ void Maze::addRandomEdges(std::vector<Edge> &edges, int pr) {
 void Maze::setVerticesCells(std::vector<Edge> &edges) {
     for (int i = 0; i < widthOfMatrixInVertices; ++i) {
         for (int j = 0; j < heightOfMatrixInVertices; ++j) {
-            maze[i * 2][j * 2] = 1;
+            maze[i * 2 + 1][j * 2 + 1] = 1;
         }
     }
 }
@@ -55,8 +55,8 @@ void Maze::setVerticesCells(std::vector<Edge> &edges) {
 Maze::Maze(int w, int h): widthOfMatrixInVertices(w), heightOfMatrixInVertices(h) {
     std::vector<Edge> edges;
 
-    widthOfMaze = widthOfMatrixInVertices * 2 - 1;
-    heightOfMaze = heightOfMatrixInVertices * 2 - 1;
+    widthOfMaze = widthOfMatrixInVertices * 2 + 1;
+    heightOfMaze = heightOfMatrixInVertices * 2 + 1;
 
     maze.resize(widthOfMaze, std::vector<bool>(heightOfMaze, 0));
 

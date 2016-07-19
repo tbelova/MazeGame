@@ -1,12 +1,10 @@
 #include "LinEqSystem2.h"
 
-LinEqSystem2::Column::Column(sf::Vector2f v): first(v.x), second(v.y) {}
-
-float LinEqSystem2::determinant(Column v1, Column v2) {
-    return v1.first * v2.second - v1.second * v2.first;
+float LinEqSystem2::determinant(sf::Vector2f v1, sf::Vector2f v2) {
+    return v1.x * v2.y - v1.y * v2.x;
 }
 
-bool LinEqSystem2::solve(Column a, Column b, Column c, float& t, float& l) {
+bool LinEqSystem2::solve(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, float& t, float& l) {
     float detAB = determinant(a, b);
     if (detAB == 0) return false;
     t = determinant(c, b) / detAB;

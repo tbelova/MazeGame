@@ -8,18 +8,19 @@
     #include "Ray.h"
 
     class SetOfSegments {
-    private:
+    public:
+
         class Segment {
         public:
             sf::Vector2f a, b;
             Segment(sf::Vector2f a, sf::Vector2f b);
         };
 
-    public:
         std::vector<Segment> segments;
 
-        SetOfSegments(Maze& maze);
         bool intersect(Ray ray, sf::Vector2f& p);
+
+        SetOfSegments() = default;
         SetOfSegments(const SetOfSegments& ) = default;
 
     };

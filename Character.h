@@ -15,10 +15,11 @@
         sf::Vector2f pos;
         sf::RectangleShape rect;
         const float speed = 2;
-        SetOfSegments segments;
 
     public:
-        Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng, SetOfSegments segments);
+        SetOfSegments segments;
+
+        Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng);
         sf::Vector2f getPos() const;
         void setPos(sf::Vector2f v);
         void updatePos(sf::Vector2f v);

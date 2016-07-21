@@ -14,6 +14,8 @@ using namespace std;
 
 class Game {
 private:
+    sf::Vector2f winSize = sf::Vector2f(500, 500);
+
     Maze maze;
     int w, h;
     Manager<sf::Drawable> mng;
@@ -21,6 +23,8 @@ private:
     Character character;
     vector<Wall> walls;
     sf::RenderWindow window;
+    sf::View view, viewAll;
+    bool all = false;
 
     void getWalls() {
         for (int i = 0; i < w; ++i) {
@@ -73,22 +77,25 @@ private:
 public:
     Game(int _w, int _h):
         maze(_w, _h), w(maze.getWidth()), h(maze.getHeight()), mng(), updMng(),
-        character(sf::Vector2f(0, 0), mng, updMng), window(sf::VideoMode(C * w, C * h), "MAZE") {
+        character(sf::Vector2f(0, 0), mng, updMng), window(sf::VideoMode(winSize.x, winSize.y), "MAZE") {
 
         character.segments = getSegments();
         getWalls();
         setCharacter();
 
+        viewAll.setCenter(sf::Vector2f(w * C / 2, h * C / 2));
+        viewAll.setSize(sf::Vector2f(w * C, h * C));
+
     }
 
-    //void moveCharacter(sf::Vector2f v, sf::Time time) {
-        //sf::Vector2f newPos = character.getPos() + v;
-
-        //if (maze.isInMaze(newPos) && maze.getCell(newPos))
-          //  character.move(v * time.asSeconds() * speed);
-    //}
-
     void draw() {
+        view.setSize(sf::Vector2f(200, 200));
+        view.setCenter(character.getRealPos());
+
+        if (all)
+            window.setView(viewAll);
+        else window.setView(view);
+
         for (auto obj: mng) {
             window.draw(*obj, sf::RenderStates());
         }
@@ -111,6 +118,11 @@ public:
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed)
                     window.close();
+                if (event.type == sf::Event::KeyPressed) {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+                        all = !all;
+                    }
+                }
             }
 
             update(clock.restart());

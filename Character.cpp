@@ -13,6 +13,10 @@ sf::Vector2f Character::getPos() const {
     return pos;
 }
 
+sf::Vector2f Character::getRealPos() const {
+    return sf::Vector2f((pos.x - 0.5) * C + C / 4, (pos.y - 0.5) * C + C / 4);
+}
+
 void Character::setPos(sf::Vector2f v) {
     pos = v + sf::Vector2f(0.5, 0.5);
 }

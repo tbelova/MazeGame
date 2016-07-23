@@ -13,12 +13,13 @@
         class Segment {
         public:
             sf::Vector2f a, b;
+            Segment();
             Segment(sf::Vector2f a, sf::Vector2f b);
         };
 
         std::vector<Segment> segments;
 
-        bool intersect(Ray ray, sf::Vector2f& p);
+        bool intersect(Ray ray, sf::Vector2f& p, Segment &segment);
 
         SetOfSegments() = default;
         SetOfSegments(const SetOfSegments& ) = default;

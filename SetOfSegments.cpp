@@ -1,8 +1,10 @@
 #include "SetOfSegments.h"
 
+SetOfSegments::Segment::Segment(): a(sf::Vector2f(0, 0)), b(sf::Vector2f(0, 0)) {}
+
 SetOfSegments::Segment::Segment(sf::Vector2f a, sf::Vector2f b): a(a), b(b) {}
 
-bool SetOfSegments::intersect(Ray ray, sf::Vector2f& p) {
+bool SetOfSegments::intersect(Ray ray, sf::Vector2f& p, Segment &segment) {
     bool fl = false;
     float anst;
     for (int i = 0; i < (int)segments.size(); ++i) {
@@ -12,6 +14,7 @@ bool SetOfSegments::intersect(Ray ray, sf::Vector2f& p) {
             if (!fl ||t < anst) {
                 fl = true;
                 anst = t;
+                segment = s;
             }
         }
     }

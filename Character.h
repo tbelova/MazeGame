@@ -20,10 +20,9 @@
         SetOfSegments segments;
 
         Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng);
+
         sf::Vector2f getPos() const;
-        sf::Vector2f getRealPos() const;
         void setPos(sf::Vector2f v);
-        void updatePos(sf::Vector2f v);
         void move(sf::Vector2f v);
         void moveCharacter(sf::Vector2f v, sf::Time time);
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;

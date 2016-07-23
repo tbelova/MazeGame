@@ -2,8 +2,8 @@
 
 Wall::Wall(sf::Vector2<int> v, Manager<sf::Drawable>& mng):
     Manager<sf::Drawable>::Object(mng), pos(v) {
-    rect.setSize(sf::Vector2f(C, C));
-    rect.setPosition(sf::Vector2f(C * pos.x, C * pos.y));
+    rect.setSize(sf::Vector2f(WallSize, WallSize));
+    rect.setPosition(sf::Vector2f(WallSize * pos.x, WallSize * pos.y));
     rect.setFillColor(sf::Color::Red);
 }
 

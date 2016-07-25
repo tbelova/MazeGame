@@ -55,8 +55,6 @@
 		<Unit filename="Manager.h" />
 		<Unit filename="Maze.cpp" />
 		<Unit filename="Maze.h" />
-		<Unit filename="Ray.cpp" />
-		<Unit filename="Ray.h" />
 		<Unit filename="SetOfSegments.cpp" />
 		<Unit filename="SetOfSegments.h" />
 		<Unit filename="Smth.h" />

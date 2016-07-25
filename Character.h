@@ -14,7 +14,7 @@
     private:
         sf::Vector2f pos;
         sf::RectangleShape rect;
-        const float speed = 2;
+        const float speed = 2 * WallSize;
 
     public:
         SetOfSegments segments;

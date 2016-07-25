@@ -5,7 +5,6 @@
     #include <SFML/Graphics.hpp>
     #include "Maze.h"
     #include "LinEqSystem2.h"
-    #include "Ray.h"
 
     class SetOfSegments {
     public:
@@ -17,9 +16,17 @@
             Segment(sf::Vector2f a, sf::Vector2f b);
         };
 
+        class HZ {
+        public:
+            sf::Vector2f point;
+            Segment segment;
+            bool intersect;
+        };
+
         std::vector<Segment> segments;
 
-        bool intersect(Ray ray, sf::Vector2f& p, Segment &segment);
+        HZ intersect(sf::Vector2f p, sf::Vector2f v);
+        void Add(Segment s);
 
         SetOfSegments() = default;
         SetOfSegments(const SetOfSegments& ) = default;

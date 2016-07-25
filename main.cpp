@@ -41,14 +41,14 @@ private:
             int x = rand() % maze.getWidth();
             int y = rand() % maze.getHeight();
             if (maze.getCell(sf::Vector2<int>(x, y))) {
-                character.setPos(sf::Vector2f(x, y));
+                character.setPos(sf::Vector2f(x * WallSize + WallSize / 2, y * WallSize + WallSize / 2));
 
                 break;
             }
         }
     }
 
-    SetOfSegments getSegments() {
+    void getSegments() {
 
         SetOfSegments s;
 
@@ -57,30 +57,24 @@ private:
         for (int i = 0; i < maze.getWidth(); ++i) {
             for (int j = 0; j < maze.getHeight(); ++j) {
                 if (!maze.getCell(sf::Vector2<int>(i, j))) {
-                    s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(WallSize * i - off, WallSize * j - off),
-                                                                sf::Vector2f(WallSize * (i + 1) + off, WallSize * j - off)));
-                    s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(WallSize * (i + 1) + off, WallSize * j - off),
-                                                                sf::Vector2f(WallSize * (i + 1) + off, WallSize * (j + 1) + off)));
-                    s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(WallSize * (i + 1) + off, WallSize * (j + 1) + off),
-                                                                sf::Vector2f(WallSize * i - off, WallSize * (j + 1) + off)));
-                    s.segments.push_back(SetOfSegments::Segment(sf::Vector2f(WallSize * i - off, WallSize * (j + 1) + off),
-                                                                sf::Vector2f(WallSize * i - off, WallSize * j - off)));
+                    vector<sf::Vector2f> points;
+                    points.push_back(sf::Vector2f(WallSize * i - off, WallSize * j - off));
+                    points.push_back(sf::Vector2f(WallSize * (i + 1) + off, WallSize * j - off));
+                    points.push_back(sf::Vector2f(WallSize * (i + 1) + off, WallSize * (j + 1) + off));
+                    points.push_back(sf::Vector2f(WallSize * i - off, WallSize * (j + 1) + off));
+                    points.push_back(sf::Vector2f(WallSize * i - off, WallSize * j - off));
+
+                    for (int k = 0; k < 4; ++k) {
+                        character.segments.Add(SetOfSegments::Segment(points[k], points[k + 1]));
+                    }
+
                 }
             }
         }
 
-        return s;
-
     }
 
-public:
-    Game(int _w, int _h):
-        maze(_w, _h), w(maze.getWidth() * WallSize), h(maze.getHeight() * WallSize), mng(), updMng(),
-        character(sf::Vector2f(0, 0), mng, updMng), window(sf::VideoMode(winSize.x, winSize.y), "MAZE") {
-
-        character.segments = getSegments();
-        getWalls();
-        setCharacter();
+    void buildBigView() {
 
         viewAll.setCenter(sf::Vector2f(w / 2, h / 2));
         viewAll.setSize(sf::Vector2f(w, h));
@@ -99,13 +93,29 @@ public:
 
     }
 
-    void draw() {
-        view.setSize(sf::Vector2f(10, 10));
-        view.setCenter(character.getPos());
+public:
+    Game(int _w, int _h):
+        maze(_w, _h), w(maze.getWidth() * WallSize), h(maze.getHeight() * WallSize), mng(), updMng(),
+        character(sf::Vector2f(0, 0), mng, updMng), window(sf::VideoMode(winSize.x, winSize.y), "MAZE") {
 
-        if (all)
+        getSegments();
+        getWalls();
+        setCharacter();
+
+        buildBigView();
+
+    }
+
+    void draw() {
+
+        if (all) {
             window.setView(viewAll);
-        else window.setView(view);
+        } else {
+            view.setSize(sf::Vector2f(10, 10));
+            view.setCenter(character.getPos());
+
+            window.setView(view);
+        }
 
         for (auto obj: mng) {
             window.draw(*obj, sf::RenderStates());

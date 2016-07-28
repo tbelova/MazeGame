@@ -32,3 +32,11 @@ SetOfSegments::HZ SetOfSegments::intersect(sf::Vector2f p, sf::Vector2f v) {
 void SetOfSegments::Add(Segment s) {
     segments.push_back(s);
 }
+
+void SetOfSegments::Add(sf::Vector2f a, sf::Vector2f b) {
+    segments.push_back(Segment(a, b));
+}
+
+void SetOfSegments::clear() {
+    segments.clear();
+}

@@ -27,6 +27,10 @@
 
         HZ intersect(sf::Vector2f p, sf::Vector2f v);
         void Add(Segment s);
+        void Add(sf::Vector2f a, sf::Vector2f b);
+        void eraseEqual();
+
+        void clear();
 
         SetOfSegments() = default;
         SetOfSegments(const SetOfSegments& ) = default;

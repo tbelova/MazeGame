@@ -1,13 +1,13 @@
 #include "Wall.h"
 
-Wall::Wall(sf::Vector2<int> v, Manager<sf::Drawable>& mng):
+Wall::Wall(sf::Vector2<float> v, Manager<sf::Drawable>& mng):
     Manager<sf::Drawable>::Object(mng), pos(v) {
     rect.setSize(sf::Vector2f(WallSize, WallSize));
-    rect.setPosition(sf::Vector2f(WallSize * pos.x, WallSize * pos.y));
+    rect.setPosition(pos);
     rect.setFillColor(sf::Color::Red);
 }
 
-sf::Vector2<int> Wall::getPos() const {
+sf::Vector2<float> Wall::getPos() const {
     return pos;
 }
 

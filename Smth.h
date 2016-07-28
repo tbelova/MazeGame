@@ -21,7 +21,7 @@
 
     template <class T>
     bool cmp(sf::Vector2<T> a, sf::Vector2<T> b) {
-        return atan2(a.x, a.y) < atan2(b.x, b.y);
+        return atan2(b.y, b.x) - atan2(a.y, a.x) > 1e-9;
     }
 
 

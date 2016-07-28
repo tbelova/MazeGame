@@ -114,8 +114,8 @@ public:
             triangle[2].position = sf::Vector2f(center + rays[i + 1]);
 
             triangle[0].color = sf::Color::White;
-            triangle[1].color = sf::Color::Cyan;
-            triangle[2].color = sf::Color::Magenta;
+            triangle[1].color = sf::Color::White; //Cyan;
+            triangle[2].color = sf::Color::Yellow; //Magenta;
 
             target.draw(triangle);
         }
@@ -252,8 +252,11 @@ public:
         light.setView(character.getPos() - ViewSize / (float)2, ViewSize);
         light.makeLight(window);
 
+        sf::RenderStates states;
+        states.blendMode = sf::BlendMultiply;
+
         for (auto obj: mng) {
-            window.draw(*obj, sf::RenderStates());
+            window.draw(*obj, states);
         }
     }
 

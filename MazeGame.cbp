@@ -50,11 +50,13 @@
 		<Unit filename="Consts.h" />
 		<Unit filename="DSU.cpp" />
 		<Unit filename="DSU.h" />
+		<Unit filename="Light.h" />
 		<Unit filename="LinEqSystem2.cpp" />
 		<Unit filename="LinEqSystem2.h" />
 		<Unit filename="Manager.h" />
 		<Unit filename="Maze.cpp" />
 		<Unit filename="Maze.h" />
+		<Unit filename="Monster.h" />
 		<Unit filename="SetOfSegments.cpp" />
 		<Unit filename="SetOfSegments.h" />
 		<Unit filename="Smth.h" />

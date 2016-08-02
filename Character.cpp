@@ -1,8 +1,7 @@
 #include "Character.h"
 
 Character::Character(sf::Vector2f v, Manager<sf::Drawable>& mng, Manager<Updatable>& updMng):
-    Manager<sf::Drawable>::Object(mng), Manager<Updatable>::Object(updMng),
-    pos(sf::Vector2f(v.x * WallSize + WallSize / 2, v.y * WallSize + WallSize / 2)) {
+    Manager<sf::Drawable>::Object(mng), Manager<Updatable>::Object(updMng), pos(v) {
 
     rect.setSize(sf::Vector2f(CharSize, CharSize));
     rect.setOrigin(CharSize / 2, CharSize / 2);

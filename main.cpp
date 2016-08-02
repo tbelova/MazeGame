@@ -46,7 +46,8 @@ private:
             int x = rand() % maze.getWidth();
             int y = rand() % maze.getHeight();
             if (maze.getCell(sf::Vector2<int>(x, y))) {
-                character.setPos(sf::Vector2f(x * WallSize + WallSize / 2, y * WallSize + WallSize / 2));
+                character.setPos(FromMazeToGame(sf::Vector2<int>(x, y)));
+                //character.setPos(sf::Vector2f(x * WallSize + WallSize / 2, y * WallSize + WallSize / 2));
 
                 break;
             }
@@ -101,7 +102,7 @@ private:
 public:
     Game(int _w, int _h):
         maze(_w, _h), w(maze.getWidth() * WallSize), h(maze.getHeight() * WallSize), mng(), updMng(),
-        character(sf::Vector2f(0, 0), mng, updMng), monster(maze, mng, updMng),
+        character(sf::Vector2f(0, 0), mng, updMng), monster(maze, mng, updMng, character),
         window(sf::VideoMode(winSize.x, winSize.y), "MAZE") {
 
         getSegments();

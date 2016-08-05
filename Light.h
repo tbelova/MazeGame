@@ -57,6 +57,13 @@
                 if (inWindow(p[2]) || inWindow(p[3])) segments.Add(p[2] - ey, p[3] - ey);
                 if (inWindow(p[3]) || inWindow(p[0])) segments.Add(p[3] + ex, p[0] + ex);
 
+                points.push_back(p[0] + ey + ex);
+                points.push_back(p[1] + ey - ex);
+                points.push_back(p[2] - ey - ex);
+                points.push_back(p[3] - ey + ex);
+
+
+
 /*
 
                 for (int i = 0; i < 4; ++i) {

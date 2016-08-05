@@ -30,14 +30,22 @@ void Character::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 void Character::moveCharacter(sf::Vector2f v, sf::Time time) {
     sf::Vector2f u = v * time.asSeconds() * speed;
     SetOfSegments::HZ hz = segments.intersect(pos, u);
-    if (sqrLength(hz.point - pos) > sqrLength(u)) {
-        move(u);
+    sf::Vector2f vr;
+    if (Length(hz.point - pos) - eps > Length(u)) {
+        vr = u;
     } else {
-        sf::Vector2f b = hz.segment.b - hz.segment.a;
-        b *= dot_product(u, b) / sqrLength(b);
-        hz = segments.intersect(pos, b);
-        if (sqrLength(hz.point - pos) > sqrLength(b))
-            move(b);
+        vr = u / Length(u) * (Length(hz.point - pos) - eps);
+    }
+    move(vr);
+    u -= vr;
+
+    sf::Vector2f b = hz.segment.b - hz.segment.a;
+    b *= dot_product(u, b) / sqrLength(b);
+    hz = segments.intersect(pos, b);
+    if (Length(hz.point - pos) - eps > Length(b)) {
+        move(b);
+    } else {
+        move(b / Length(b) * (Length(hz.point - pos) - eps));
     }
 }
 

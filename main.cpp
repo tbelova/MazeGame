@@ -120,6 +120,14 @@ public:
 
         if (all) {
             window.setView(viewAll);
+
+            light.setWalls(walls);
+            light.setCenter(character.getPos());
+            light.setView(character.getPos() - ViewSize / (float)2, ViewSize);
+            light.makeLight(window);
+
+            //states.blendMode = sf::BlendMultiply;
+
         } else {
             view.setCenter(character.getPos());
 

@@ -5,6 +5,9 @@
     #include <SFML/Graphics.hpp>
     #include "Maze.h"
     #include "LinEqSystem2.h"
+    #include "Smth.h"
+
+    using namespace std;
 
     class SetOfSegments {
     public:
@@ -31,6 +34,9 @@
         void eraseEqual();
 
         void clear();
+        std::vector<Segment>::iterator begin();
+        std::vector<Segment>::iterator end();
+        void unique(float eps);
 
         SetOfSegments() = default;
         SetOfSegments(const SetOfSegments& ) = default;

@@ -39,6 +39,9 @@
             segments.clear();
             points.clear();
 
+            float eps = 0.1;
+            sf::Vector2f ex(eps, 0), ey(0, eps);
+
             for (auto wall: walls) {
                 sf::Vector2f pos = wall.getPos();
 
@@ -47,7 +50,14 @@
                 p.push_back(pos + sf::Vector2f(WallSize, 0));
                 p.push_back(pos + sf::Vector2f(WallSize, WallSize));
                 p.push_back(pos + sf::Vector2f(0, WallSize));
-                p.push_back(p[0]);
+                //p.push_back(p[0]);
+
+                if (inWindow(p[0]) || inWindow(p[1])) segments.Add(p[0] + ey, p[1] + ey);
+                if (inWindow(p[1]) || inWindow(p[2])) segments.Add(p[1] - ex, p[2] - ex);
+                if (inWindow(p[2]) || inWindow(p[3])) segments.Add(p[2] - ey, p[3] - ey);
+                if (inWindow(p[3]) || inWindow(p[0])) segments.Add(p[3] + ex, p[0] + ex);
+
+/*
 
                 for (int i = 0; i < 4; ++i) {
                     if (inWindow(p[i]) || inWindow(p[i + 1])) {
@@ -66,36 +76,67 @@
                     }
 
                 }
-
+*/
             }
 
+            segments.unique(eps);
+
             vector<sf::Vector2f> p;
-            p.push_back(ViewPos);
-            p.push_back(ViewPos + sf::Vector2f(0, ViewSize.y));
-            p.push_back(ViewPos + ViewSize);
-            p.push_back(ViewPos + sf::Vector2f(ViewSize.x, 0));
+            p.push_back(ViewPos + sf::Vector2f(-WallSize, -WallSize));
+            p.push_back(ViewPos + sf::Vector2f(0, ViewSize.y) + sf::Vector2f(-WallSize, +WallSize));
+            p.push_back(ViewPos + ViewSize + sf::Vector2f(+WallSize, +WallSize));
+            p.push_back(ViewPos + sf::Vector2f(ViewSize.x, 0) + sf::Vector2f(+WallSize, -WallSize));
             p.push_back(p[0]);
 
             for (int i = 0; i < 4; ++i) {
                 segments.Add(p[i], p[i + 1]);
 
-                points.push_back(p[i]);
+         /*       points.push_back(p[i]);
 
                 sf::Vector2f v = p[i + 1] - p[i];
                 sf::Vector2f eps = v / Length(v) * (float)0.1;
 
                 points.push_back(p[i] + eps);
-                points.push_back(p[i] - eps);
+                points.push_back(p[i] - eps);*/
 
             }
 
+            for (auto seg: segments) {
+                auto a = seg.a;
+                auto b = seg.b;
+                auto v = b - a;
+                auto eps = v / Length(v) * (float)0.1;
+                points.push_back(a);
+                points.push_back(b);
+                points.push_back(a + eps);
+                points.push_back(b + eps);
+                points.push_back(a - eps);
+                points.push_back(b - eps);
+            }
+
         }
+
 
         void setCenter(sf::Vector2f pos) {
             center = pos;
         }
 
         void makeLight(sf::RenderTarget &target) {
+
+            /*sf::RectangleShape rect(sf::Vector2f(0.1, 0.1));
+            rect.setOrigin(0.05, 0.05);
+            rect.setFillColor(sf::Color::Yellow);
+            for (auto s: segments) {
+                if (s.a.x == s.b.x) {
+                    rect.setPosition(s.a);
+                    target.draw(rect);
+                    rect.setPosition(s.b);
+                    target.draw(rect);
+                }
+            }
+
+            return;*/
+
             shape.clear();
             for (auto p: points) {
                 shape.push_back(segments.intersect(center, p - center).point);
@@ -105,7 +146,7 @@
             for (auto point: shape) {
                 rays.push_back(point - center);
             }
-            sort(rays.begin(), rays.end(), cmp<float>);
+            sort(rays.begin(), rays.end(), cmpByAngle<float>);
             rays.push_back(rays[0]);
 
 
@@ -118,8 +159,8 @@
                 triangle[2].position = sf::Vector2f(center + rays[i + 1]);
 
                 triangle[0].color = sf::Color::White;
-                triangle[1].color = sf::Color::Cyan;
-                triangle[2].color = sf::Color::Magenta;
+                triangle[1].color = sf::Color::White; //Cyan;
+                triangle[2].color = sf::Color::White;//Magenta;
 
                 target.draw(triangle);
             }

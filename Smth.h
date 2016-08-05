@@ -21,8 +21,14 @@
     }
 
     template <class T>
-    bool cmp(sf::Vector2<T> a, sf::Vector2<T> b) {
+    bool cmpByAngle(sf::Vector2<T> a, sf::Vector2<T> b) {
         return atan2(b.y, b.x) - atan2(a.y, a.x) > 1e-9;
+    }
+
+    template <class T>
+    bool cmp(sf::Vector2<T> a, sf::Vector2<T> b) {
+        if (a.x == b.x) return a.y < b.y;
+        return a.x < b.x;
     }
 
     inline sf::Vector2<int> FromGameToMaze(sf::Vector2f v) {
@@ -31,6 +37,10 @@
 
     inline sf::Vector2f FromMazeToGame(sf::Vector2<int> v) {
         return sf::Vector2f(v.x * WallSize + WallSize / 2, v.y * WallSize + WallSize / 2);
+    }
+
+    inline bool Equal(float a, float b) {
+        return abs(a - b) < 1e-3;
     }
 
 

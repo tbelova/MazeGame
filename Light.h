@@ -52,15 +52,30 @@
                 p.push_back(pos + sf::Vector2f(0, WallSize));
                 //p.push_back(p[0]);
 
-                if (inWindow(p[0]) || inWindow(p[1])) segments.Add(p[0] + ey, p[1] + ey);
-                if (inWindow(p[1]) || inWindow(p[2])) segments.Add(p[1] - ex, p[2] - ex);
-                if (inWindow(p[2]) || inWindow(p[3])) segments.Add(p[2] - ey, p[3] - ey);
-                if (inWindow(p[3]) || inWindow(p[0])) segments.Add(p[3] + ex, p[0] + ex);
-
-                points.push_back(p[0] + ey + ex);
-                points.push_back(p[1] + ey - ex);
-                points.push_back(p[2] - ey - ex);
-                points.push_back(p[3] - ey + ex);
+                bool ok0 = false;
+                bool ok1 = false;
+                bool ok2 = false;
+                bool ok3 = false;
+                if (inWindow(p[0]) || inWindow(p[1])) {
+                    segments.Add(p[0] + ey, p[1] + ey);
+                    if (!ok0) points.push_back(p[0] + ey + ex), ok0 = true;
+                    if (!ok1) points.push_back(p[1] + ey - ex), ok1 = true;
+                }
+                if (inWindow(p[1]) || inWindow(p[2])) {
+                    segments.Add(p[1] - ex, p[2] - ex);
+                    if (!ok1) points.push_back(p[1] + ey - ex), ok1 = true;
+                    if (!ok2) points.push_back(p[2] - ey - ex), ok2 = true;
+                }
+                if (inWindow(p[2]) || inWindow(p[3])) {
+                    segments.Add(p[2] - ey, p[3] - ey);
+                    if (!ok2) points.push_back(p[2] - ey - ex), ok2 = true;
+                    if (!ok3) points.push_back(p[3] - ey + ex), ok3 = true;
+                }
+                if (inWindow(p[3]) || inWindow(p[0])) {
+                    segments.Add(p[3] + ex, p[0] + ex);
+                    if (!ok3) points.push_back(p[3] - ey + ex), ok3 = true;
+                    if (!ok0) points.push_back(p[0] + ey + ex), ok0 = true;
+                }
 
 
 

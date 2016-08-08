@@ -187,6 +187,34 @@
                 target.draw(triangle);
             }
 
+            int AMOUNT_OF_POINTS = 90;
+            float PI = 3.1415926;
+            float alpha = 2 * PI / AMOUNT_OF_POINTS;
+
+            sf::RenderStates states;
+            states.blendMode = sf::BlendMultiply;
+
+            float radius = ViewSize.x / (float)1.4;
+
+            for (int i = 0; i < AMOUNT_OF_POINTS; ++i) {
+                sf::VertexArray triangle(sf::Triangles, 3);
+
+                sf::Vector2f dir(sin(alpha * i), cos(alpha * i));
+                sf::Vector2f nextDir(sin(alpha * (i + 1)), cos(alpha * (i + 1)));
+
+                dir *= radius;
+                nextDir *= radius;
+
+                triangle[0].position = sf::Vector2f(center);
+                triangle[1].position = sf::Vector2f(center + dir);
+                triangle[2].position = sf::Vector2f(center + nextDir);
+
+                triangle[0].color = sf::Color(150, 120, 100);
+                triangle[1].color = sf::Color::Black;
+                triangle[2].color = sf::Color::Black;
+
+                target.draw(triangle, states);
+            }
 
 
             /*sf::RectangleShape rect(sf::Vector2f(0.1, 0.1));

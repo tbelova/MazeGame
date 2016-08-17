@@ -60,6 +60,7 @@
 		<Unit filename="SetOfSegments.cpp" />
 		<Unit filename="SetOfSegments.h" />
 		<Unit filename="Smth.h" />
+		<Unit filename="Stone.h" />
 		<Unit filename="Updatable.h" />
 		<Unit filename="Wall.cpp" />
 		<Unit filename="Wall.h" />

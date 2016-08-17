@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Consts.h"
 #include "Wall.h"
 #include "DSU.h"
@@ -11,12 +12,13 @@
 #include "Smth.h"
 #include "Monster.h"
 #include "Light.h"
+#include "Stone.h"
 
 using namespace std;
 
 class Game {
 private:
-    sf::Vector2f winSize = sf::Vector2f(500, 500);
+    sf::Vector2f winSize = sf::Vector2f(600, 600);
 
     Maze maze;
     double w, h;
@@ -30,6 +32,9 @@ private:
     bool all = false;
     Light light;
     sf::Vector2f ViewSize = sf::Vector2f(10, 10);
+    sf::Texture texture, stoneTexture;
+    vector<vector<list<Stone> > > stones;
+    sf::Music music;
 
     void getWalls() {
         for (int i = 0; i < maze.getWidth(); ++i) {
@@ -47,7 +52,6 @@ private:
             int y = rand() % maze.getHeight();
             if (maze.getCell(sf::Vector2<int>(x, y))) {
                 character.setPos(FromMazeToGame(sf::Vector2<int>(x, y)));
-                //character.setPos(sf::Vector2f(x * WallSize + WallSize / 2, y * WallSize + WallSize / 2));
 
                 break;
             }
@@ -112,6 +116,18 @@ public:
         buildBigView();
         view.setSize(ViewSize);
 
+        texture.loadFromFile("floor.png");
+        stoneTexture.loadFromFile("rock.png");
+
+        stones.resize(w);
+        for (int i = 0; i < w; ++i) {
+            stones[i].resize(h);
+        }
+
+        music.openFromFile("music.wav");
+        music.setLoop(true);
+        music.play();
+
     }
 
     void draw() {
@@ -138,19 +154,39 @@ public:
             light.setView(character.getPos() - ViewSize / (float)2, ViewSize);
             light.makeLight(window);
 
-            states.blendMode = sf::BlendMultiply;
+            //states.blendMode = sf::BlendMultiply;
+            states.blendMode.colorDstFactor = sf::BlendMode::Factor::Zero;
+            states.blendMode.colorSrcFactor = sf::BlendMode::Factor::DstAlpha;
+            states.blendMode.alphaDstFactor = sf::BlendMode::Factor::One;
+            states.blendMode.alphaSrcFactor = sf::BlendMode::Factor::Zero;
 
+
+        }
+
+        sf::RectangleShape rect(sf::Vector2f(WallSize, WallSize));
+        rect.setTexture(&texture);
+
+        for (int i = 0; i < w; ++i) {
+            for (int j = 0; j < h; ++j) {
+                rect.setPosition(sf::Vector2f(i * WallSize, j * WallSize));
+                window.draw(rect, states);
+            }
         }
 
         for (auto obj: mng) {
             window.draw(*obj, states);
         }
+
+        if (!all)
+            light.makeSpot(window);
+
     }
 
     void update(sf::Time time) {
         for (auto obj: updMng) {
             obj->update(time);
         }
+
     }
 
     void start() {
@@ -168,12 +204,22 @@ public:
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
                         all = !all;
                     }
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+                        sf::Vector2<int> pos = FromGameToMaze(character.getPos());
+                        stones[pos.x][pos.y].insert(stones[pos.x][pos.y].end(), Stone(mng, character.getPos(), &stoneTexture));
+                    }
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+                        sf::Vector2<int> pos = FromGameToMaze(character.getPos());
+                        if (!stones[pos.x][pos.y].empty()) {
+                            stones[pos.x][pos.y].erase(stones[pos.x][pos.y].begin());
+                        }
+                    }
                 }
             }
 
             update(clock.restart());
 
-            window.clear();
+            window.clear(sf::Color(0, 0, 0, 0));
 
             draw();
 

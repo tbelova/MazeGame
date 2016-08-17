@@ -171,7 +171,6 @@
             sort(rays.begin(), rays.end(), cmpByAngle<float>);
             rays.push_back(rays[0]);
 
-
             for (int i = 0; i < (int)rays.size() - 1; ++i) {
                 if (rays[i] == rays[i + 1]) continue;
 
@@ -187,12 +186,15 @@
                 target.draw(triangle);
             }
 
+        }
+
+        void makeSpot(sf::RenderTarget& target) {
+            //sf::RenderStates states;
+            //states.blendMode = sf::BlendMultiply;
+
             int AMOUNT_OF_POINTS = 90;
             float PI = 3.1415926;
             float alpha = 2 * PI / AMOUNT_OF_POINTS;
-
-            sf::RenderStates states;
-            states.blendMode = sf::BlendMultiply;
 
             float radius = ViewSize.x / (float)1.4;
 
@@ -209,25 +211,12 @@
                 triangle[1].position = sf::Vector2f(center + dir);
                 triangle[2].position = sf::Vector2f(center + nextDir);
 
-                triangle[0].color = sf::Color(150, 120, 100);
-                triangle[1].color = sf::Color::Black;
-                triangle[2].color = sf::Color::Black;
+                triangle[0].color = sf::Color(0, 0, 0, 0); //::White; //sf::Color(150, 120, 100);
+                triangle[1].color = sf::Color(0, 0, 0, 255); //::Black;
+                triangle[2].color = sf::Color(0, 0, 0, 255); //::Black;
 
-                target.draw(triangle, states);
+                target.draw(triangle);
             }
-
-
-            /*sf::RectangleShape rect(sf::Vector2f(0.1, 0.1));
-            rect.setOrigin(0.05, 0.05);
-            rect.setFillColor(sf::Color::Yellow);
-            for (auto s: shape) {
-            //for (int i = 0; i < 500; ++i) {
-                rect.setPosition(s);
-                target.draw(rect);
-            }*/
-
-
-
         }
 
     };
